@@ -1,13 +1,14 @@
 /** @type {import('next').NextConfig} */
+
 const nextConfig = {
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: true, // ✅ This disables ESLint from failing the build
   },
   images: {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "utfs.io", // UploadThing CDN
+        hostname: "utfs.io",
         port: "",
         pathname: "/**",
       },
@@ -15,4 +16,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = nextConfig; // ✅ Must use CommonJS here
