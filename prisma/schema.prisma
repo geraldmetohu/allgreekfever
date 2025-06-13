@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  firstName    String
+  lastName     String
+  profileImage String
+  createdAt    DateTime @default(now())
+}
+
+model Event {
+  id          String     @id @default(uuid())
+  name        String
+  description String
+  date        DateTime
+  time        String
+  singer      String
+  location    String
+  price       Float
+  image       String[]   // Array of image URLs
+  isFeatured  Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+
+  bookings    Booking[]
+  plans       Plan[]
+  posters     Poster[]
+}
+
+model Banner {
+  id          String   @id @default(uuid())
+  title       String
+  subtitle    String
+  imageString String
+  createdAt   DateTime @default(now())
+}
+
+model Booking {
+  id        String   @id @default(uuid())
+  paid      Boolean  @default(false)
+  date      DateTime
+  time      String
+  customer  String
+  email     String
+  phone     String
+  tickets   Int
+  total     Float
+  tableId   String
+  eventId   String
+  createdAt DateTime @default(now())
+
+  event     Event    @relation(fields: [eventId], references: [id])
+  table     Table    @relation(fields: [tableId], references: [id])
+}
+
+model Plan {
+  id        String   @id @default(uuid())
+  name      String
+  width     Int      @default(24)
+  height    Int      @default(36)
+  eventId   String
+  createdAt DateTime @default(now())
+
+  event     Event    @relation(fields: [eventId], references: [id])
+  tables    Table[]
+}
+
+model Table {
+  id         String   @id @default(uuid())
+  name       String
+  shape      Shape
+  position   Position
+  rounded    Boolean  @default(false)
+  color      Color
+  width      Int
+  height     Int
+  startX     Int
+  startY     Int
+  booked     Boolean  @default(false)
+  seats      Int      @default(10)
+  price      Int      @default(30)
+  type       String
+  planId     String
+  createdAt  DateTime @default(now())
+
+  plan       Plan     @relation(fields: [planId], references: [id])
+  bookings   Booking[]
+}
+
+model Memory {
+  id          String   @id @default(uuid())
+  title       String
+  mediaUrl    String
+  description String
+  eventName   String
+  createdAt   DateTime @default(now())
+}
+
+model Poster {
+  id          String   @id @default(uuid())
+  title       String
+  imageString String
+  isFeatured  Boolean  @default(false)
+  eventId     String
+  createdAt   DateTime @default(now())
+
+  event       Event    @relation(fields: [eventId], references: [id])
+}
+
+enum Shape {
+  CIRCLE
+  RECTANGULAR
+  SQUARE
+}
+
+enum Position {
+  VERTICAL
+  DIAGONAL
+  HORIZONTAL
+}
+
+enum Color {
+  BLACK
+  GREY
+  ORANGE
+  GREEN
+  RED
+  BRONZE
+}
