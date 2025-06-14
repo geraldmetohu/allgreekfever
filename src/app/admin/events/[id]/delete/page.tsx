@@ -9,8 +9,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
+export default function Page(props: any) {
+  const id = props?.params?.id;
+  if (!id) return null;
 
-export default function DeleteEventRoute({ params }: { params: { id: string } }) {
   return (
     <div className="h-[88vh] w-full flex items-center justify-center">
       <Card className="max-w-xl w-full">
@@ -27,7 +29,7 @@ export default function DeleteEventRoute({ params }: { params: { id: string } })
           </Button>
 
           <form action={DeleteEvent}>
-            <input type="hidden" name="eventId" value={params.id} />
+            <input type="hidden" name="eventId" value={id} />
             <SubmitButton variant="destructive" text="Delete Event" />
           </form>
         </CardFooter>

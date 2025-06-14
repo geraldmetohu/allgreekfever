@@ -14,8 +14,10 @@ async function getData(eventId: string) {
     date: data.date.toISOString().split("T")[0], // format for <input type="date">
   };
 }
+export default async function Page(props: any) {
+  const id = props?.params?.id;
+  if (!id) return null;
 
-export default async function EditRoute({ params }: { params: { id: string } }) {
-  const data = await getData(params.id);
+  const data = await getData(id);
   return <EditEventForm data={data} />;
 }
