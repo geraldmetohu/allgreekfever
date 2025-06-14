@@ -10,12 +10,7 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 
-// ✅ DO NOT type PageProps. DO NOT use any custom interface
-export default async function Page({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default function DeleteBannerRoute({ params }: any) {
   return (
     <div className="h-[88vh] w-full flex items-center justify-center">
       <Card className="max-w-xl">
@@ -27,7 +22,7 @@ export default async function Page({
         </CardHeader>
         <CardFooter className="w-full flex justify-between">
           <Button variant="secondary" asChild>
-            <Link href="/admin/banner">Cancel</Link>
+            <Link href="/dashboard/banner">Cancel</Link>
           </Button>
           <form action={DeleteBanner}>
             <input type="hidden" name="bannerId" value={params.id} />

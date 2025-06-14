@@ -27,6 +27,7 @@ import { MoreHorizontal, PlusCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+
 async function getData() {
   const data = await prisma.banner.findMany({
     orderBy: {
