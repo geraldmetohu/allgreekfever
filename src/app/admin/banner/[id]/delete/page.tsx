@@ -9,8 +9,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
+interface DeleteBannerProps {
+  params: {
+    id: string;
+  };
+}
 
-export default function DeleteBannerRoute({ params }: { params: { id: string } }) {
+export default function DeleteBannerRoute({ params }: DeleteBannerProps) {
+
   return (
     <div className="h-[88vh] w-full flex items-center justify-center">
       <Card className="max-w-xl">
