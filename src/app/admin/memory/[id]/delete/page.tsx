@@ -16,7 +16,7 @@ type PageProps = {
   };
 };
 
-export default function DeleteMemoryRoute({ params }: PageProps) {
+export default async function DeleteMemoryRoute({ params }: PageProps) {
   return (
     <div className="h-[88vh] w-full flex items-center justify-center">
       <Card className="max-w-xl">
