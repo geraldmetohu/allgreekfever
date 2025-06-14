@@ -15,8 +15,7 @@ interface DeleteBannerProps {
   };
 }
 
-export default function DeleteBannerRoute({ params }: DeleteBannerProps) {
-
+export default function DeleteBannerRoute({ params }: { params: { id: string } }) {
   return (
     <div className="h-[88vh] w-full flex items-center justify-center">
       <Card className="max-w-xl">
