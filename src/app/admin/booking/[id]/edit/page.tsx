@@ -6,11 +6,15 @@ import {
 } from "@/app/actions";
 import prisma from "@/lib/db";
 import { notFound } from "next/navigation";
+// DO NOT define or use a Params type.
+// DO NOT use inline param typing.
+// DO NOT rename the function to anything else but "Page".
 
-type Params = { params: { id: string } };
+export default async function Page(props: any) {
+  const id = props?.params?.id;
+  if (!id) return null;
 
-export default async function Page({ params }: Params) {
-  const data = await getBooking(params.id);
+  const data = await getBooking(id);
   if (!data) return notFound();
 
   const events = await getAllEvents();
