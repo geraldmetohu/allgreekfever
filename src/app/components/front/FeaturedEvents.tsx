@@ -5,42 +5,38 @@ import { LoadingEventCard } from "./LoadingEventCard";
 
 async function getEvents() {
   const events = await prisma.event.findMany({
-    where: {
-      isFeatured: true,
-    },
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      date: true,
-      time: true,
-      singer: true,
-      location: true,
-      price: true,
-      images: {
-        select: {
-          url: true,
-        },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: 3,
-  });
+  where: {
+    isFeatured: true,
+  },
+  select: {
+    id: true,
+    name: true,
+    description: true,
+    date: true,
+    time: true,
+    singer: true,
+    location: true,
+    price: true,
+    image: true, // ✅ correct field
+  },
+  orderBy: {
+    createdAt: "desc",
+  },
+  take: 3,
+});
 
-  // Transform the result for the frontend
-  return events.map((event) => ({
-    id: event.id,
-    name: event.name,
-    description: event.description,
-    image: event.images.map((img) => img.url),
-    date: event.date.toISOString(), // convert Date to string
-    time: event.time,
-    singer: event.singer,
-    location: event.location,
-    price: event.price,
-  }));
+return events.map((event) => ({
+  id: event.id,
+  name: event.name,
+  description: event.description,
+image: event.image ?? [], // ✅ safe fallback in case it's null
+  date: event.date.toISOString(),
+  time: event.time,
+  singer: event.singer,
+  location: event.location,
+  price: event.price,
+}));
+
 }
 
 export function FeaturedEvents() {
