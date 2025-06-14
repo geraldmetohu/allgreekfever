@@ -1,14 +1,9 @@
-// ✅ FILE: app/api/tables/[id]/route.ts (Soft Delete Version — Fixed for Turbopack)
-
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 
 // ✅ PUT: Update Table
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  const tableId = params.id;
+export async function PUT(req: NextRequest, context: any) {
+  const tableId = context.params.id;
   const body = await req.json();
 
   try {
@@ -25,11 +20,8 @@ export async function PUT(
 }
 
 // ✅ DELETE: Soft Delete Table (mark as booked = true)
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  const tableId = params.id;
+export async function DELETE(req: NextRequest, context: any) {
+  const tableId = context.params.id;
 
   try {
     const softDeleted = await prisma.table.update({
