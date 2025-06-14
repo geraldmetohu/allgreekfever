@@ -10,13 +10,8 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 
-type PageProps = {
-  params: {
-    id: string;
-  };
-};
+export default async function DeleteMemoryRoute({ params }: { params: { id: string } }) {
 
-export default async function DeleteMemoryRoute({ params }: PageProps) {
   return (
     <div className="h-[88vh] w-full flex items-center justify-center">
       <Card className="max-w-xl">
