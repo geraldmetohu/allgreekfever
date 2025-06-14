@@ -4,9 +4,9 @@ import prisma from '@/lib/db';
 // ✅ GET: Fetch a single plan by ID
 export async function GET(
   req: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
-  const { id } = context.params;
+  const { id } = params;
 
   if (!id) {
     return new Response("Missing ID", { status: 400 });
@@ -31,9 +31,9 @@ export async function GET(
 // ✅ DELETE: Delete a plan and its related tables
 export async function DELETE(
   req: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
-  const { id: planId } = context.params;
+  const { id: planId } = params;
 
   try {
     // First delete related tables (if not using cascading deletes in DB)
