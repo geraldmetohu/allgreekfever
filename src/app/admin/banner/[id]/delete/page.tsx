@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 
-export default async function DeleteBannerPage({
+// ✅ DO NOT type PageProps. DO NOT use any custom interface
+export default async function Page({
   params,
 }: {
   params: { id: string };
