@@ -1,3 +1,4 @@
+import { DeleteMemory } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -94,11 +95,15 @@ export default async function MemoriesRoute() {
                               Edit
                             </Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem asChild>
-                            <Link href={`/admin/memory/${memory.id}/delete`}>
-                              Delete
-                            </Link>
-                          </DropdownMenuItem>
+<DropdownMenuItem asChild>
+  <form action={DeleteMemory}>
+    <input type="hidden" name="memoryId" value={memory.id} />
+    <button type="submit" className="w-full text-left text-red-600">
+      Delete
+    </button>
+  </form>
+</DropdownMenuItem>
+
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
