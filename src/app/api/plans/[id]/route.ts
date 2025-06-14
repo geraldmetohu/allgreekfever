@@ -4,9 +4,9 @@ import prisma from '@/lib/db';
 // ✅ GET: Fetch a single plan by ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } } // ✅ explicitly typed to avoid Vercel build error
 ) {
-  const { id } = params;
+  const { id } = context.params;
 
   if (!id) return new Response("Missing ID", { status: 400 });
 
@@ -24,9 +24,9 @@ export async function GET(
 // ✅ DELETE: Delete a plan and its related tables
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } } // ✅ same here
 ) {
-  const { id: planId } = params;
+  const { id: planId } = context.params;
 
   try {
     await prisma.table.deleteMany({ where: { planId } });
