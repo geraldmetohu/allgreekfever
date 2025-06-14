@@ -25,7 +25,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import prisma from "@/lib/db";
-import { DeleteBookingForm } from "./[id]/delete/page";
+import { DeleteBookingForm } from "@/app/components/admin/DeleteBookingForm";
 
 async function getBookings() {
   return await prisma.booking.findMany({
