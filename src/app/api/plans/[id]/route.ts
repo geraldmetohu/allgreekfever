@@ -1,32 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 
-// Correctly typing the context parameter using Next.js' built-in type
-interface Context {
-  params: {
-    id: string;
-  };
-}
-
 // ✅ GET: Fetch a single plan by ID
 export async function GET(
   req: NextRequest,
-  context: Context
+  { params }: { params: { id: string } }
 ) {
-  const { id } = context.params;
+  const { id } = params;
 
-  if (!id) {
-    return new Response("Missing ID", { status: 400 });
-  }
+  if (!id) return new Response("Missing ID", { status: 400 });
 
   try {
-    const plan = await prisma.plan.findUnique({
-      where: { id },
-    });
-
-    if (!plan) {
-      return new Response("Plan not found", { status: 404 });
-    }
+    const plan = await prisma.plan.findUnique({ where: { id } });
+    if (!plan) return new Response("Plan not found", { status: 404 });
 
     return NextResponse.json(plan);
   } catch (error) {
@@ -38,22 +24,17 @@ export async function GET(
 // ✅ DELETE: Delete a plan and its related tables
 export async function DELETE(
   req: NextRequest,
-  context: Context
+  { params }: { params: { id: string } }
 ) {
-  const { id: planId } = context.params;
+  const { id: planId } = params;
 
   try {
-    await prisma.table.deleteMany({
-      where: { planId },
-    });
-
-    await prisma.plan.delete({
-      where: { id: planId },
-    });
+    await prisma.table.deleteMany({ where: { planId } });
+    await prisma.plan.delete({ where: { id: planId } });
 
     return NextResponse.json({ message: 'Plan deleted successfully' });
   } catch (error) {
     console.error('[DELETE PLAN]', error);
-    return new NextResponse('Failed to delete plan', { status: 500 });
+    return new Response('Failed to delete plan', { status: 500 });
   }
 }
