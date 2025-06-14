@@ -1,12 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 
+// Correctly typing the context parameter using Next.js' built-in type
+interface Context {
+  params: {
+    id: string;
+  };
+}
+
 // ✅ GET: Fetch a single plan by ID
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: Context
 ) {
-  const { id } = params;
+  const { id } = context.params;
 
   if (!id) {
     return new Response("Missing ID", { status: 400 });
@@ -31,17 +38,15 @@ export async function GET(
 // ✅ DELETE: Delete a plan and its related tables
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: Context
 ) {
-  const { id: planId } = params;
+  const { id: planId } = context.params;
 
   try {
-    // First delete related tables (if not using cascading deletes in DB)
     await prisma.table.deleteMany({
       where: { planId },
     });
 
-    // Then delete the plan
     await prisma.plan.delete({
       where: { id: planId },
     });
