@@ -115,21 +115,23 @@ export default function TablePlannerPage() {
   };
 
   const defaultTableForm: TableType = {
-    id: '',
-    name: '',
-    shape: 'CIRCLE',
-    position: 'VERTICAL',
-    color: 'BLACK',
-    rounded: false,
-    booked: false,
-    width: 2,
-    height: 2,
-    startX: 0,
-    startY: 0,
-    seats: 10,
-    price: 30,
-    type: 'VIP'
-  };
+  id: '',
+  name: '',
+  shape: 'CIRCLE',
+  position: 'VERTICAL',
+  color: 'BLACK',
+  rounded: false,
+  booked: false,
+  width: 2,
+  height: 2,
+  startX: 0,
+  startY: 0,
+  seats: 10,
+  price: 30,
+  type: 'VIP',
+  planId: '', // ✅ Add this line
+};
+
 
   const [newTableForm, setNewTableForm] = useState<TableType>(defaultTableForm);
 
