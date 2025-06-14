@@ -2,13 +2,14 @@ import { EditBookingForm } from "@/app/components/admin/EditBookingForm";
 import {
   getAllEvents,
   getPlansByEvent,
-  getFreeTablesByPlan,
   getBooking,
 } from "@/app/actions";
 import prisma from "@/lib/db";
 import { notFound } from "next/navigation";
 
-export default async function Page({ params }: { params: { id: string } }) {
+type Params = { params: { id: string } };
+
+export default async function Page({ params }: Params) {
   const data = await getBooking(params.id);
   if (!data) return notFound();
 
