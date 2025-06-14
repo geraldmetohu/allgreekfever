@@ -26,11 +26,8 @@ async function getEventById(id: string) {
   if (!event) return notFound();
   return event;
 }
-export default async function EventPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function EventPage({ params }: any) {
+
   const event = await getEventById(params.id); // includes event.images
   const events = await getEvents();
 
