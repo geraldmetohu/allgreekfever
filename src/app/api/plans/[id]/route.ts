@@ -2,17 +2,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 
 // ✅ GET: Fetch a single plan by ID
-export async function GET(
-  req: NextRequest,
-  context: { params: { id: string } } // ✅ explicitly typed to avoid Vercel build error
-) {
+export async function GET(req: NextRequest, context: any) {
   const { id } = context.params;
 
-  if (!id) return new Response("Missing ID", { status: 400 });
+  if (!id) {
+    return new Response("Missing ID", { status: 400 });
+  }
 
   try {
-    const plan = await prisma.plan.findUnique({ where: { id } });
-    if (!plan) return new Response("Plan not found", { status: 404 });
+    const plan = await prisma.plan.findUnique({
+      where: { id },
+    });
+
+    if (!plan) {
+      return new Response("Plan not found", { status: 404 });
+    }
 
     return NextResponse.json(plan);
   } catch (error) {
@@ -22,15 +26,19 @@ export async function GET(
 }
 
 // ✅ DELETE: Delete a plan and its related tables
-export async function DELETE(
-  req: NextRequest,
-  context: { params: { id: string } } // ✅ same here
-) {
+export async function DELETE(req: NextRequest, context: any) {
   const { id: planId } = context.params;
 
   try {
-    await prisma.table.deleteMany({ where: { planId } });
-    await prisma.plan.delete({ where: { id: planId } });
+    // First delete related tables (if not using cascading deletes in DB)
+    await prisma.table.deleteMany({
+      where: { planId },
+    });
+
+    // Then delete the plan
+    await prisma.plan.delete({
+      where: { id: planId },
+    });
 
     return NextResponse.json({ message: 'Plan deleted successfully' });
   } catch (error) {
