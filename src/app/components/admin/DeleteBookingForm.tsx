@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import { DeleteBooking } from "@/app/actions";
 
 export function DeleteBookingForm({ bookingId }: { bookingId: string }) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -10,9 +11,11 @@ export function DeleteBookingForm({ bookingId }: { bookingId: string }) {
   };
 
   return (
-    <form action={`/admin/booking/${bookingId}/delete`} method="POST" onSubmit={handleSubmit}>
+    <form action={DeleteBooking} onSubmit={handleSubmit}>
       <input type="hidden" name="bookingId" value={bookingId} />
-      <button type="submit" className="w-full text-left text-red-600">Delete</button>
+      <button type="submit" className="w-full text-left text-red-600">
+        Delete
+      </button>
     </form>
   );
 }
