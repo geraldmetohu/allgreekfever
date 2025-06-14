@@ -15,6 +15,7 @@ import { MoreHorizontal, PlusCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FeaturedToggle } from "./FeaturedToggle"; // ✅ import client component
+import { DeletePoster } from "@/app/actions";
 
 async function getPosters() {
   return await prisma.poster.findMany({
@@ -88,9 +89,15 @@ export default async function PosterRoute() {
                           <DropdownMenuItem asChild>
                             <Link href={`/admin/poster/${poster.id}/edit`}>Edit</Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem asChild>
-                            <Link href={`/admin/poster/${poster.id}/delete`}>Delete</Link>
-                          </DropdownMenuItem>
+<DropdownMenuItem asChild>
+  <form action={DeletePoster}>
+    <input type="hidden" name="posterId" value={poster.id} />
+    <button type="submit" className="w-full text-left text-red-600">
+      Delete
+    </button>
+  </form>
+</DropdownMenuItem>
+
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
