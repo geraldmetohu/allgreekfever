@@ -1,6 +1,12 @@
 import prisma from "@/lib/db";
 import { notFound } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 
 async function getBooking(bookingId: string) {
   const data = await prisma.booking.findUnique({
@@ -35,9 +41,12 @@ async function getBooking(bookingId: string) {
   if (!data) return notFound();
   return data;
 }
-export default async function ViewBookingPage(props: { params: { id: string } }) {
-  const { params } = props;
-  const data = await getBooking(params.id); // ✅ Safe now
+
+export default async function Page(props: any) {
+  const id = props?.params?.id;
+  if (!id) return null;
+
+  const data = await getBooking(id);
 
   return (
     <div className="max-w-3xl mx-auto mt-10">
