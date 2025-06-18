@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 
 const images = [
-  '/singer.jpg',
-  '/singer.jpg',
-  '/singer.jpg',
-  '/singer.jpg',
+  '/sax.jpg',
+  '/stage.jpg',
+  '/valle.jpg',
+  '/dancing2.jpg',
 ];
 
 export default function Slideshow() {

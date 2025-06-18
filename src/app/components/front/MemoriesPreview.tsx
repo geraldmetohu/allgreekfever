@@ -1,10 +1,10 @@
 import Link from "next/link";
 
 const memories = [
-  { src: "/singer.jpg", type: "image" },
-  { src: "/singer.jpg", type: "image" },
+  { src: "/kelly_edit.jpg", type: "video" },
+  { src: "/dancing2.jpg", type: "image" },
   { src: "/edit_first.mp4", type: "video" },
-  { src: "/singer.jpg", type: "image" },
+  { src: "/sax.jpg", type: "image" },
 ];
 
 export default function MemoriesPreview() {
