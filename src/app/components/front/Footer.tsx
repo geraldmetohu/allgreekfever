@@ -1,4 +1,7 @@
 "use client";
+import Image from "next/image";
+import { FaTiktok } from "react-icons/fa";
+
 
 import Link from "next/link";
 import { Instagram, Facebook, Phone, Mail, MessageSquare } from "lucide-react";
@@ -14,6 +17,13 @@ export default function Footer() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
+            <Image
+              src="/allgreekfever_logo.png"
+              alt="All Greek Fever Logo"
+              width={50}
+              height={50}
+              className="rounded"
+            />
           <h3 className="text-lg font-semibold text-amber-100 mb-4">Our Vision</h3>
           <p className="text-zinc-100  leading-relaxed">
             We craft refined digital experiences blending design, technology, and strategy — tailored for modern events and businesses.
@@ -54,26 +64,29 @@ export default function Footer() {
             <li className="flex items-center gap-2">
               <Mail className="w-4 h-4 " />
               <Link href="mailto:info@yourdomain.com" className="hover:text-indigo-300 transition">
-                <strong>Email:</strong> info@yourdomain.com
+                <strong>Email:</strong> k2kevent@gmail.com
               </Link>
             </li>
             <li className="flex items-center gap-2">
               <Phone className="w-4 h-4 text-white" />
-              <Link href="tel:+441234567890" className="hover:text-indigo-300 transition">
-                <strong>Call:</strong> +44 1234 567890
+              <Link href="tel:+447771894852" className="hover:text-indigo-300 transition">
+                <strong>Call:</strong> +44 7771 894852
               </Link>
             </li>
             <li className="text-zinc-100 mt-2">London, UK</li>
           </ul>
 
           <div className="flex gap-5 mt-5">
-            <Link href="https://instagram.com" target="_blank" className="hover:text-pink-500 transition">
+            <Link href="https://www.instagram.com/allgreek_fever/" target="_blank" className="hover:text-pink-500 transition">
               <Instagram className="w-5 h-5" />
             </Link>
-            <Link href="https://facebook.com" target="_blank" className="hover:text-blue-600 transition">
+            <Link href="https://www.facebook.com/share/16sZD4TNPY/?mibextid=wwXIfr" target="_blank" className="hover:text-blue-600 transition">
               <Facebook className="w-5 h-5" />
             </Link>
-            <Link href="https://wa.me/441234567890" target="_blank" className="hover:text-green-500 transition">
+            <Link href="https://www.tiktok.com/@allgreek_fever?_t=ZM-8xCiFF9MphG&_r=1" target="_blank" className="hover:text-fuchsia-700 transition">
+              <FaTiktok className="w-5 h-5" />
+            </Link>
+            <Link href="https://wa.me/+447771894852" target="_blank" className="hover:text-green-500 transition">
               <MessageSquare className="w-5 h-5" />
             </Link>
           </div>

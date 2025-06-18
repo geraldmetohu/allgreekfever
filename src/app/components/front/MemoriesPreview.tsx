@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 const memories = [
-  { src: "/kelly_edit.jpg", type: "video" },
+  { src: "/kelly_edit.mp4", type: "video" },
   { src: "/dancing2.jpg", type: "image" },
   { src: "/edit_first.mp4", type: "video" },
   { src: "/sax.jpg", type: "image" },
