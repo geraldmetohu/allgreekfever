@@ -14,23 +14,20 @@ import {
   Grape,
   icons,
   BadgePoundSterlingIcon,
-  GlassWater,
+  Table,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { useState } from "react";
+import { FaGlassMartini, FaMoneyBillAlt } from "react-icons/fa";
 
 const navItems = [
-  { href: "/admin", label: "Stats", icon: Calendar },
-  { href: "/admin/booking", label: "Bookings", icon: Ticket },
-  { href: "/admin/planner", label: "Table Planner", icon: LayoutGrid },
-  { href: "/admin/events", label: "Events", icon: MicVocal },
-  { href: "/admin/banner", label: "Banner", icon: FlagIcon },
-  { href: "/admin/poster", label: "Poster", icon: Info },
-  { href: "/admin/memory", label: "Memories", icon: Image },
-  { href: "/admin/staff", label: "Staff", icon: Grape},
-  {href: "/admin/orders", label: "Orders", icon: BadgePoundSterlingIcon},
-  {href: "/admin/products", label: "Products", icon: GlassWater}
+  { href: "/bar", label: "Notes", icon: Calendar },
+  { href: "/bar/order_list", label: "Orders List", icon: FaMoneyBillAlt },
+  { href: "/bar/new_order", label: "New Order", icon: LayoutGrid },
+  { href: "/bar/product_list", label: "All Products", icon: FaGlassMartini },
+  { href: "/bar/table_plan", label: "See Table Plan", icon: Table },
+
 ];
 
 export function Sidebar() {
@@ -40,7 +37,7 @@ export function Sidebar() {
     <>
       {/* DESKTOP SIDEBAR */}
       <aside className="w-64 bg-white border-r border-gray-300 h-screen p-4 hidden md:block">
-        <h2 className="text-xl font-bold text-black mb-6">Admin Dashboard</h2>
+        <h2 className="text-xl font-bold text-black mb-6">Orders Dashboard</h2>
         <nav className="space-y-2 text-black">
           {navItems.map(({ href, label, icon: Icon }) => (
             <Link

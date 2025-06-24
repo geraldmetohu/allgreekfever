@@ -30,9 +30,12 @@ export async function CreateBanner(prevState: any, formData: FormData) {
     const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || !ADMIN_EMAILS.includes(user.email!)) {
-    return redirect("/");
-  }
+
+const adminEmails = await getAdminEmails();
+
+if (!user || !adminEmails.includes(user.email!)) {
+  return redirect("/");
+}
 
   const submission = parseWithZod(formData, {
     schema: bannerSchema,
@@ -57,9 +60,12 @@ export async function EditBanner(prevState: any, formData: FormData) {
     const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || !ADMIN_EMAILS.includes(user.email!)) {
-    return redirect("/");
-  }
+
+const adminEmails = await getAdminEmails();
+
+if (!user || !adminEmails.includes(user.email!)) {
+  return redirect("/");
+}
 
   const submission = parseWithZod(formData, { schema: bannerSchema });
 
@@ -86,9 +92,12 @@ export async function DeleteBanner(formData: FormData) {
     const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || !ADMIN_EMAILS.includes(user.email!)) {
-    return redirect("/");
-  }
+
+const adminEmails = await getAdminEmails();
+
+if (!user || !adminEmails.includes(user.email!)) {
+  return redirect("/");
+}
 
   const bannerId = formData.get("bannerId") as string;
   if (!bannerId) throw new Error("Missing banner ID");
@@ -106,9 +115,12 @@ export async function CreateEvent(_: unknown, formData: FormData) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || !ADMIN_EMAILS.includes(user.email!)) {
-    return redirect("/");
-  }
+
+const adminEmails = await getAdminEmails();
+
+if (!user || !adminEmails.includes(user.email!)) {
+  return redirect("/");
+}
 
   const submission = parseWithZod(formData, {
     schema: eventSchema,
@@ -139,9 +151,12 @@ export async function EditEvent(prevState: any, formData: FormData) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || !ADMIN_EMAILS.includes(user.email!)) {
-    return redirect("/");
-  }
+
+const adminEmails = await getAdminEmails();
+
+if (!user || !adminEmails.includes(user.email!)) {
+  return redirect("/");
+}
 
   const submission = parseWithZod(formData, {
     schema: eventSchema,
@@ -179,9 +194,12 @@ export async function DeleteEvent(formData: FormData) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || !ADMIN_EMAILS.includes(user.email!)) {
-    return redirect("/");
-  }
+
+const adminEmails = await getAdminEmails();
+
+if (!user || !adminEmails.includes(user.email!)) {
+  return redirect("/");
+}
 
   const eventId = formData.get("eventId") as string;
   if (!eventId) throw new Error("Missing event ID");
@@ -221,9 +239,12 @@ export async function EditBooking(prevState: any, formData: FormData) {
     const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || !ADMIN_EMAILS.includes(user.email!)) {
-    return redirect("/");
-  }
+
+const adminEmails = await getAdminEmails();
+
+if (!user || !adminEmails.includes(user.email!)) {
+  return redirect("/");
+}
 
   const submission = parseWithZod(formData, { schema: bookingSchema });
 
@@ -257,10 +278,12 @@ export async function DeleteBooking(formData: FormData) {
     const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || !ADMIN_EMAILS.includes(user.email!)) {
-    return redirect("/");
-  }
 
+const adminEmails = await getAdminEmails();
+
+if (!user || !adminEmails.includes(user.email!)) {
+  return redirect("/");
+}
   const bookingId = formData.get("bookingId") as string;
 
   if (!bookingId) {
@@ -280,9 +303,12 @@ export async function CreateBooking(prevState: unknown, formData: FormData) {
 const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || !ADMIN_EMAILS.includes(user.email!)) {
-    return redirect("/");
-  }
+
+const adminEmails = await getAdminEmails();
+
+if (!user || !adminEmails.includes(user.email!)) {
+  return redirect("/");
+}
 
   const submission = parseWithZod(formData, {
     schema: bookingSchema,
@@ -316,9 +342,12 @@ export async function CreatePoster(_prevState: any, formData: FormData) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || !ADMIN_EMAILS.includes(user.email!)) {
-    return redirect("/");
-  }
+
+const adminEmails = await getAdminEmails();
+
+if (!user || !adminEmails.includes(user.email!)) {
+  return redirect("/");
+}
 
   const submission = parseWithZod(formData, { schema: posterSchema });
 
@@ -344,10 +373,12 @@ export async function DeletePoster(formData: FormData) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || !ADMIN_EMAILS.includes(user.email!)) {
-    return redirect("/");
-  }
 
+const adminEmails = await getAdminEmails();
+
+if (!user || !adminEmails.includes(user.email!)) {
+  return redirect("/");
+}
   const posterId = formData.get("posterId") as string;
   if (!posterId) throw new Error("Missing poster ID");
 
@@ -366,9 +397,12 @@ export async function CreateMemory(
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || !ADMIN_EMAILS.includes(user.email!)) {
-    return redirect("/");
-  }
+
+const adminEmails = await getAdminEmails();
+
+if (!user || !adminEmails.includes(user.email!)) {
+  return redirect("/");
+}
 
   const submission = await parseWithZod(formData, { schema: memorySchema });
 
@@ -394,9 +428,12 @@ export async function DeleteMemory(formData: FormData) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || !ADMIN_EMAILS.includes(user.email!)) {
-    return redirect("/");
-  }
+
+const adminEmails = await getAdminEmails();
+
+if (!user || !adminEmails.includes(user.email!)) {
+  return redirect("/");
+}
 
   const memoryId = formData.get("memoryId") as string;
 
@@ -441,7 +478,10 @@ export async function updatePlanSize(input: unknown) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || !ADMIN_EMAILS.includes(user.email!)) {
+  
+const adminEmails = await getAdminEmails();
+
+if (!user || !adminEmails.includes(user.email!)) {
     throw new Error("Unauthorized");
   }
 
@@ -985,3 +1025,82 @@ export async function updateQuantity(formData: FormData) {
   await redis.set(cartKey, { ...cart, items: updatedItems }); // ✅ keep phone
   revalidatePath("/bag"); // ✅ live UI update
 }
+
+
+
+type CreateOrderInput = {
+  table: string;
+  notes?: string;
+  total: number;
+  paymentType: "CASH" | "CARD";
+  paid: boolean;
+  served: boolean;
+  orderItems: {
+    productId: string;
+    quantity: number;
+    price: number;
+  }[];
+};
+
+export async function createOrder(data: CreateOrderInput) {
+  const order = await prisma.orders.create({
+    data: {
+      table: data.table,
+      notes: data.notes,
+      total: data.total,
+      paid: data.paid,
+      served: data.served,
+      paymentType: data.paymentType,
+      waitress: {
+        connect: {
+          id: "demo-waitress-id", // Replace with actual user/waitress selection logic
+        },
+      },
+      orderItems: {
+        create: data.orderItems.map((item) => ({
+          product: { connect: { id: item.productId } },
+          quantity: item.quantity,
+          price: item.price,
+        })),
+      },
+    },
+  });
+
+  return order;
+}
+
+
+export async function getOrders() {
+  const orders = await prisma.orders.findMany({
+    include: {
+      orderItems: {
+        include: {
+          product: true,
+        },
+      },
+      waitress: true,
+    },
+    orderBy: {
+      createdAt: "desc", // Ensure newest orders are at the top
+    },
+  });
+
+  return orders;
+}
+
+
+export async function getAdminEmails(): Promise<string[]> {
+  const staticAdmins = ["geraldmetohu@gmail.com", "hasanajaleksios@icloud.com"];
+
+  const dbAdmins = await prisma.staff.findMany({
+    where: {
+      role: { in: ["ADMIN", "BARTENDER"] },
+    },
+    select: { email: true },
+  });
+
+  const dynamicEmails = dbAdmins.map((staff) => staff.email);
+  const uniqueEmails = Array.from(new Set([...staticAdmins, ...dynamicEmails]));
+
+  return uniqueEmails;
+} 

@@ -32,6 +32,7 @@ model Event {
   bookings    Booking[]
   plans       Plan[]
   posters     Poster[]
+  staff       Staff[]
 }
 
 model Banner {
@@ -103,6 +104,62 @@ model Memory {
   createdAt   DateTime @default(now())
 }
 
+model Staff {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  role      Roles
+  eventId   String? 
+  createdAt DateTime @default(now())
+  active    Boolean @default(false)
+
+  event     Event?    @relation(fields: [eventId], references: [id])
+  orders    Orders[] @relation("WaitressOrders") // 🔁 Reverse relation
+}
+
+ 
+model Orders {
+  id          String      @id @default(uuid())
+  createdAt   DateTime    @default(now())
+  table       String
+  notes       String?
+  total       Float       @default(0)
+  paid        Boolean     @default(false)
+  served      Boolean     @default(false)
+  paymentType PaymentType @default(CASH)
+
+  waitressId  String
+  waitress    Staff       @relation("WaitressOrders", fields: [waitressId], references: [id])
+
+  orderItems  OrderItem[]
+}
+
+
+model OrderItem {
+  id         String   @id @default(uuid())
+  quantity   Int      @default(1)
+  price      Float    // price per unit at the time of order
+  productId  String
+  orderId    String
+
+  product    Products @relation(fields: [productId], references: [id])
+  order      Orders   @relation(fields: [orderId], references: [id])
+}
+
+model Products {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  price_v     Float
+  price_g     Float
+  price_s     Float
+  price_b     Float
+  quantity    Int
+
+  orderItems  OrderItem[]
+}
+
+
 model Poster {
   id          String   @id @default(uuid())
   title       String
@@ -114,12 +171,24 @@ model Poster {
   event       Event    @relation(fields: [eventId], references: [id])
 }
 
+enum PaymentType {
+  CASH
+  CARD
+  MIXED
+}
+
 enum Shape {
   CIRCLE
   RECTANGULAR
   SQUARE
 }
 
+enum Roles {
+  ADMIN
+  BARTENDER
+  FLOWER
+  WAITRESS
+}
 enum Position {
   VERTICAL
   DIAGONAL
