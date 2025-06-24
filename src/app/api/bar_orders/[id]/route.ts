@@ -1,8 +1,10 @@
-// src/app/api/orders/[id]/route.ts
-import prisma from "@/lib/db";
-import { NextRequest, NextResponse } from "next/server";
+// src/app/api/bar_orders/[id]/route.ts
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/db";
+
+export async function PUT(req: NextRequest, context: { params: { id: string } }) {
+  const { params } = context;
   const data = await req.json();
 
   const updated = await prisma.orders.update({
