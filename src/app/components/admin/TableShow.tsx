@@ -38,7 +38,7 @@ export function TableShow({ selectedPlan, onEdit, onDelete }: TableShowProps) {
   if (!selectedPlan) return <p className="text-muted-foreground">No plan selected</p>;
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 text-teal-950">
       <Table>
         <TableHeader>
           <TableRow>

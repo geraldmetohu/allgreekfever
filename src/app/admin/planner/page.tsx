@@ -136,9 +136,9 @@ export default function TablePlannerPage() {
   const [newTableForm, setNewTableForm] = useState<TableType>(defaultTableForm);
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-4 space-y-4 text-blue-950">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">🧱 Table Planner</h1>
+        <h1 className="text-2xl font-bold"> Table Planner</h1>
         <div className="flex gap-2 items-end">
           <Select onValueChange={setSelectedPlan}>
             <SelectTrigger className="w-[200px]">
