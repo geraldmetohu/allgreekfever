@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(req: NextRequest, context: { params: { id: string } }) {
   try {
     const data = await req.json();
-
     const updated = await prisma.orders.update({
-      where: { id: params.id },
+      where: { id: context.params.id },
       data,
     });
 
