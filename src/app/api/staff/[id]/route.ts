@@ -1,12 +1,13 @@
-// src/app/api/staff/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 
-// DELETE handler (already implemented)
-export async function DELETE(_: Request, { params }: { params: { id: string } }) {
+// ✅ DELETE handler
+export async function DELETE(_: NextRequest, context: any) {
+  const id = context.params.id;
+
   try {
     const staff = await prisma.staff.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ success: true, staff });
@@ -16,13 +17,15 @@ export async function DELETE(_: Request, { params }: { params: { id: string } })
   }
 }
 
-// ✅ NEW PUT handler to toggle `active`
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+// ✅ PUT handler
+export async function PUT(req: NextRequest, context: any) {
+  const id = context.params.id;
+
   try {
     const { active } = await req.json();
 
     const updated = await prisma.staff.update({
-      where: { id: params.id },
+      where: { id },
       data: { active },
     });
 
