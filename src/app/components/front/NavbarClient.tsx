@@ -66,7 +66,9 @@ export function NavBarClient({ user, ticketCount }: { user: any, ticketCount: nu
         ) : (
           <div className="hidden md:flex items-center gap-2 text-amber-50 mb-5">
             <Button className="bg-green-500 hover:bg-green-700" asChild>
-              <LoginLink>Sign In</LoginLink>
+<LoginLink postLoginRedirectURL="/api/auth/creation">
+  Sign In
+</LoginLink>
             </Button>
             <Button className="bg-green-500 hover:bg-green-700" asChild>
               <RegisterLink>Create Account</RegisterLink>
