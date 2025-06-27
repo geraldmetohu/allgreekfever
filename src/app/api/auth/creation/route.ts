@@ -11,6 +11,7 @@ export async function GET() {
     throw new Error("Something went wrong...");
   }
 
+  // Ensure user exists in your DB
   let dbUser = await prisma.user.findUnique({
     where: { id: user.id },
   });
@@ -27,12 +28,14 @@ export async function GET() {
     });
   }
 
+  // Fetch role info
   const adminEmails = await getAdminEmails();
   const staff = await prisma.staff.findFirst({
     where: { email: user.email },
     select: { role: true },
   });
 
+  // Decide destination
   let redirectUrl = "/"; // default for clients
 
   if (adminEmails.includes(user.email)) {
