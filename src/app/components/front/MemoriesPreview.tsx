@@ -27,7 +27,6 @@ export default function MemoriesPreview() {
                 src={mem.src}
                 className="w-full h-40 object-cover rounded-xl shadow-md auto border-2 border-amber-600"
                 controls
-                autoPlay
                 
               />
             )

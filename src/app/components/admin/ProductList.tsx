@@ -136,7 +136,7 @@ export default function ProductList({ products: initialProducts }: ProductListPr
                       className="border border-gray-600 text-black rounded px-2 py-1 w-full"
                     />
                   </td>
-                  <td className="p-2 border border-gray-400 text-gray-950">
+                  <td className="p-2 border-2 bg-blue-950 text-gray-950">
                     <input
                       name="quantity"
                       type="number"

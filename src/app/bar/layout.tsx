@@ -18,9 +18,15 @@ export default async function BarLayout({ children }: { children: ReactNode }) {
     where: { email: user.email },
   });
 
-  if (!adminEmails.includes(user.email) && staff?.role !== "BARTENDER") {
-    return redirect("/");
-  }
+const isAllowed =
+  adminEmails.includes(user.email) ||
+  staff?.role === "BARTENDER" ||
+  staff?.role === "WAITRESS";
+
+if (!isAllowed) {
+  return redirect("/");
+}
+
 
   return (
     <div className="flex min-h-screen">
