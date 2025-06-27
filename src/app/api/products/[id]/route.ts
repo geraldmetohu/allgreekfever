@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 
-// ✅ Correct PUT handler
 export async function PUT(req: NextRequest, context: { params: { id: string } }) {
+  const id = context.params.id;
+  const body = await req.json();
+
   try {
-    const body = await req.json();
     const updated = await prisma.products.update({
-      where: { id: context.params.id },
+      where: { id },
       data: body,
     });
+
     return NextResponse.json(updated);
   } catch (error) {
     console.error("Update error:", error);
@@ -16,10 +18,11 @@ export async function PUT(req: NextRequest, context: { params: { id: string } })
   }
 }
 
-// ✅ Correct DELETE handler
 export async function DELETE(_: NextRequest, context: { params: { id: string } }) {
+  const id = context.params.id;
+
   try {
-    await prisma.products.delete({ where: { id: context.params.id } });
+    await prisma.products.delete({ where: { id } });
     return new NextResponse("Deleted successfully", { status: 200 });
   } catch (error) {
     console.error("Delete error:", error);
