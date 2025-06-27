@@ -9,7 +9,7 @@ import { NavbarLinks } from "./NavbarLinks";
 import { CartCountBadge } from "./CartCountBadge";
 import { UserDropdown } from "./UserDropdown";
 
-export function NavBarClient({ user, ticketCount }: { user: any, ticketCount: number }) {
+export function NavBarClient({ user, ticketCount }: { user: any; ticketCount: number }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
@@ -21,16 +21,9 @@ export function NavBarClient({ user, ticketCount }: { user: any, ticketCount: nu
       }
     }
 
-    if (mobileOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [mobileOpen]);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <nav className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
@@ -53,10 +46,11 @@ export function NavBarClient({ user, ticketCount }: { user: any, ticketCount: nu
 
         {user ? (
           <>
-            <Link href="/bag" className="group p-2 flex items-center">
-              <ShoppingBagIcon className="h-6 w-6 text-blue-400 group-hover:text-blue-600" />
-              <CartCountBadge />
-            </Link>
+<Link href="/bag" className="group p-2 flex items-center">
+  <ShoppingBagIcon className="h-6 w-6 text-blue-400 group-hover:text-blue-600" />
+  <CartCountBadge />
+</Link>
+
             <UserDropdown
               email={user.email}
               name={user.given_name}
@@ -64,11 +58,11 @@ export function NavBarClient({ user, ticketCount }: { user: any, ticketCount: nu
             />
           </>
         ) : (
-          <div className="hidden md:flex items-center gap-2 text-amber-50 mb-5">
+          <div className="hidden md:flex items-center gap-2 text-amber-50">
             <Button className="bg-green-500 hover:bg-green-700" asChild>
-<LoginLink postLoginRedirectURL="/api/auth/creation">
-  Sign In
-</LoginLink>
+              <LoginLink postLoginRedirectURL="/api/auth/creation">
+                Sign In
+              </LoginLink>
             </Button>
             <Button className="bg-green-500 hover:bg-green-700" asChild>
               <RegisterLink>Create Account</RegisterLink>
@@ -81,16 +75,18 @@ export function NavBarClient({ user, ticketCount }: { user: any, ticketCount: nu
       {mobileOpen && (
         <div
           ref={mobileMenuRef}
-          className="fixed top-0 right-0 h-full w-64 z-50 bg-black shadow-lg p-6 md:hidden transition-all"
+          className="fixed top-0 right-0 h-full w-64 z-50 bg-black shadow-lg p-6 transition-all md:hidden"
         >
           <NavbarLinks isMobile onLinkClick={() => setMobileOpen(false)} />
 
           {!user && (
             <div className="mt-4 flex flex-col space-y-2">
-              <Button variant="outline" asChild onClick={() => setMobileOpen(false)}>
-                <LoginLink>Sign In</LoginLink>
+              <Button variant="outline" onClick={() => setMobileOpen(false)} asChild>
+                <LoginLink postLoginRedirectURL="/api/auth/creation">
+                  Sign In
+                </LoginLink>
               </Button>
-              <Button variant="outline" asChild onClick={() => setMobileOpen(false)}>
+              <Button variant="outline" onClick={() => setMobileOpen(false)} asChild>
                 <RegisterLink>Create Account</RegisterLink>
               </Button>
             </div>
