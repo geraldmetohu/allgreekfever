@@ -1,10 +1,8 @@
-// src/app/bar/layout.tsx
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { Sidebar } from "../components/bar/sidebar";
-import  prisma  from "@/lib/db";
-import { getAdminEmails } from "../actions";
+import prisma from "@/lib/db";
 
 export default async function BarLayout({ children }: { children: ReactNode }) {
   const { getUser } = getKindeServerSession();
@@ -12,21 +10,17 @@ export default async function BarLayout({ children }: { children: ReactNode }) {
 
   if (!user?.email) return redirect("/");
 
-  const adminEmails = await getAdminEmails();
-
   const staff = await prisma.staff.findFirst({
     where: { email: user.email },
+    select: { role: true },
   });
 
-const isAllowed =
-  adminEmails.includes(user.email) ||
-  staff?.role === "BARTENDER" ||
-  staff?.role === "WAITRESS";
+  const allowedRoles = ["ADMIN", "BARTENDER", "WAITRESS"];
+  const isAllowed = allowedRoles.includes(staff?.role || "");
 
-if (!isAllowed) {
-  return redirect("/");
-}
-
+  if (!isAllowed) {
+    return redirect("/");
+  }
 
   return (
     <div className="flex min-h-screen">

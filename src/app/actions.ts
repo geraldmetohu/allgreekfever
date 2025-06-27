@@ -1094,8 +1094,37 @@ export async function getAdminEmails(): Promise<string[]> {
 
   const dbAdmins = await prisma.staff.findMany({
     where: {
-      role: { in: ["ADMIN", "BARTENDER"] },
+      role: "ADMIN", // ✅ Only admins
     },
+    select: { email: true },
+  });
+
+
+  const dynamicEmails = dbAdmins.map((staff) => staff.email);
+  const uniqueEmails = Array.from(new Set([...staticAdmins, ...dynamicEmails]));
+
+  return uniqueEmails;
+} 
+
+// getBarStaffEmails.ts
+export async function getBarStaffEmails(): Promise<string[]> {
+  const dbStaff = await prisma.staff.findMany({
+    where: {
+      role: { in: ["ADMIN", "BARTENDER", "WAITRESS"] },
+    },
+    select: { email: true },
+  });
+
+  return dbStaff.map((s) => s.email);
+}
+
+
+// getOnlyAdminEmails.ts
+export async function getOnlyAdminEmails(): Promise<string[]> {
+  const staticAdmins = ["geraldmetohu@gmail.com", "hasanajaleksios@icloud.com"];
+
+  const dbAdmins = await prisma.staff.findMany({
+    where: { role: "ADMIN" },
     select: { email: true },
   });
 
@@ -1103,4 +1132,4 @@ export async function getAdminEmails(): Promise<string[]> {
   const uniqueEmails = Array.from(new Set([...staticAdmins, ...dynamicEmails]));
 
   return uniqueEmails;
-} 
+}

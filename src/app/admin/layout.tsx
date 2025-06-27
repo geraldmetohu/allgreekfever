@@ -1,17 +1,24 @@
-// src/app/admin/layout.tsx
 import { Sidebar } from "@/app/components/admin/Sidebar";
-import { ADMIN_EMAILS } from "@/lib/adminemails";
+import prisma from "@/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 
-export default  async function AdminLayout({ children }: { children: ReactNode }) {
+export default async function AdminLayout({ children }: { children: ReactNode }) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  if (!user || !ADMIN_EMAILS.includes(user.email!)) {
-    return redirect("/");
-  }
+  if (!user?.email) return redirect("/");
+
+  const admin = await prisma.staff.findFirst({
+    where: {
+      email: user.email,
+      role: "ADMIN",
+    },
+  });
+
+  if (!admin) return redirect("/");
+
   return (
     <div className="flex min-h-screen">
       <Sidebar />
