@@ -21,7 +21,7 @@ export default function NewOrderPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("/api/waitress-tables");
+        const res = await fetch("/api/waitress_tables");
         const data = await res.json();
         console.log("Fetched Tables:", data);
         setTables(data.tables || []);
