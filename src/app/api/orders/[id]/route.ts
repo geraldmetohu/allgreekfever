@@ -1,9 +1,8 @@
-// src/app/api/orders/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function PUT(req: NextRequest, context: any) {
+  const id = context.params.id;
   const data = await req.json();
 
   try {
@@ -22,5 +21,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       { error: "Update failed", details: String(error) },
       { status: 500 }
     );
+    
   }
 }
