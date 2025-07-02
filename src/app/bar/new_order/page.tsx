@@ -21,17 +21,22 @@ export default function NewOrderPage() {
   const router = useRouter();
 
   useEffect(() => {
-    async function fetchData() {
-      const res = await fetch("/api/waitress-tables");
-      const data = await res.json();
-      setTables(data.tables || []);
-      const productsRes = await fetch("/api/products");
-      const productData = await productsRes.json();
-      setProducts(productData || []);
-    }
+  async function fetchData() {
+    const res = await fetch("/api/waitress-tables");
+    const data = await res.json();
+    console.log("Tables fetched:", data.tables);
+    setTables(data.tables || []);
 
-    fetchData();
-  }, []);
+    const productsRes = await fetch("/api/products");
+    const productData = await productsRes.json();
+    console.log("Products fetched:", productData);
+    setProducts(productData || []);
+  }
+
+  fetchData();
+}, []);
+
+
 
   const total = Object.entries(selectedProducts).reduce((acc, [id, qty]) => {
     const prod = products.find((p) => p.id === id);
@@ -103,53 +108,29 @@ export default function NewOrderPage() {
         Select Products
       </Label>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: 24 }}>
-        {products.map((product) => {
-          const qty = selectedProducts[product.id] || 0;
+{products.map((product) => (
+  <div key={product.id} style={{ marginBottom: "16px" }}>
+    <Label style={{ color: "#1e293b" }}>{product.name} (£{product.price_v})</Label>
+    <select
+      value={selectedProducts[product.id] || 0}
+      onChange={(e) => handleProductChange(product.id, parseInt(e.target.value))}
+      style={{
+        width: "100%",
+        padding: "8px",
+        borderRadius: "6px",
+        border: "1px solid #cbd5e1",
+        backgroundColor: "#f1f5f9",
+      }}
+    >
+      {[...Array(11)].map((_, i) => (
+        <option key={i} value={i}>
+          {i}
+        </option>
+      ))}
+    </select>
+  </div>
+))}
 
-          return (
-            <div
-              key={product.id}
-              style={{
-                border: "1px solid #cbd5e1",
-                borderRadius: "8px",
-                padding: "16px",
-                backgroundColor: "#f8fafc",
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                <span style={{ fontWeight: "bold", color: "#1e293b" }}>{product.name}</span>
-                <span style={{ color: "#15803d" }}>£{product.price_v.toFixed(2)}</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <button
-                  onClick={() => handleProductChange(product.id, Math.max(qty - 1, 0))}
-                  style={{
-                    padding: "6px 12px",
-                    backgroundColor: "#ef4444",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                  }}
-                >
-                  −
-                </button>
-                <span style={{ fontSize: 18 }}>{qty}</span>
-                <button
-                  onClick={() => handleProductChange(product.id, qty + 1)}
-                  style={{
-                    padding: "6px 12px",
-                    backgroundColor: "#3b82f6",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                  }}
-                >
-                  +
-                </button>
-              </div>
-            </div>
-          );
-        })}
       </div>
 
       {/* Notes */}
