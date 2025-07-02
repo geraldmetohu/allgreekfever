@@ -63,7 +63,7 @@ export default function NewOrderPage() {
     });
 
     try {
-      const response = await fetch("/api/create_order", {
+      const response = await fetch("/api/create_orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
