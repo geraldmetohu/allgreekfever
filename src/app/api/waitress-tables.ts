@@ -1,6 +1,6 @@
 // src/app/api/waitress-tables/route.ts
 import { NextResponse } from "next/server";
-import  prisma  from "@/lib/db";
+import prisma from "@/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 export async function GET() {
@@ -11,27 +11,25 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Fetch the waitress and her assigned event ID
   const waitress = await prisma.staff.findFirst({
     where: { email: user.email },
-    include: { event: true },
+    select: { eventId: true },
   });
 
-  if (!waitress || !waitress.eventId) {
-    return NextResponse.json({ tables: [], waitress: null });
+  if (!waitress?.eventId) {
+    return NextResponse.json({ tables: [] });
   }
 
+  // Fetch all tables linked to plans under the waitress's event
   const tables = await prisma.table.findMany({
     where: {
       plan: {
         eventId: waitress.eventId,
       },
     },
-    include: {
-      plan: {
-        include: { event: true },
-      },
-    },
+    orderBy: { name: "asc" }, // Optional: sort by name
   });
 
-  return NextResponse.json({ tables, waitress });
+  return NextResponse.json({ tables });
 }

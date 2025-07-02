@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Table, Products } from "@prisma/client";
@@ -21,17 +20,15 @@ export default function NewOrderPage() {
   const [served, setServed] = useState(false);
   const router = useRouter();
 
-useEffect(() => {
-  async function fetchData() {
-    const res = await fetch("/api/waitress-tables");
-    const data = await res.json();
-    setTables(data.tables);
-    setProducts(await (await fetch("/api/products")).json());
-  }
-  fetchData();
-}, []);
-
-
+  useEffect(() => {
+    async function fetchData() {
+      const res = await fetch("/api/waitress-tables");
+      const data = await res.json();
+      setTables(data.tables);
+      setProducts(await (await fetch("/api/products")).json());
+    }
+    fetchData();
+  }, []);
 
   const total = Object.entries(selectedProducts).reduce((acc, [id, qty]) => {
     const prod = products.find((p) => p.id === id);
@@ -71,7 +68,7 @@ useEffect(() => {
         New Order
       </h2>
 
-
+      {/* Table selection */}
       <Label style={{ color: "#0f172a" }}>Table</Label>
       <select
         value={selectedTable}
@@ -87,25 +84,43 @@ useEffect(() => {
         ))}
       </select>
 
-      <div className="space-y-4 mb-4">
-        {products.map((product) => (
-          <div key={product.id} className="flex items-center gap-4">
-            <Label className="w-1/3" style={{ color: "#1e293b" }}>{product.name}</Label>
-            <Input
-              type="number"
-              value={selectedProducts[product.id] || 0}
-              onChange={(e) => handleProductChange(product.id, Number(e.target.value))}
-              className="w-1/4"
-              style={{ borderColor: "#60a5fa", backgroundColor: "#eff6ff" }}
-              min={0}
-            />
-            <span className="text-sm" style={{ color: "#047857" }}>
-              Price: £{product.price_v}
-            </span>
-          </div>
-        ))}
+      {/* Product Selection */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        {products.map((product) => {
+          const qty = selectedProducts[product.id] || 0;
+
+          return (
+            <div
+              key={product.id}
+              className="border rounded p-4 bg-slate-50 shadow-sm"
+            >
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-semibold text-slate-800">{product.name}</h3>
+                <span className="text-green-700 text-sm">£{product.price_v}</span>
+              </div>
+              <div className="flex items-center justify-between gap-2">
+                <button
+                  onClick={() =>
+                    handleProductChange(product.id, Math.max(qty - 1, 0))
+                  }
+                  className="bg-red-500 text-white px-3 py-1 rounded"
+                >
+                  −
+                </button>
+                <span className="text-lg font-medium">{qty}</span>
+                <button
+                  onClick={() => handleProductChange(product.id, qty + 1)}
+                  className="bg-blue-500 text-white px-3 py-1 rounded"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
+      {/* Notes */}
       <Label style={{ color: "#0f172a" }}>Notes</Label>
       <Textarea
         value={notes}
@@ -114,6 +129,7 @@ useEffect(() => {
         style={{ backgroundColor: "#f8fafc", borderColor: "#cbd5e1" }}
       />
 
+      {/* Payment Type */}
       <RadioGroup
         defaultValue={paymentType}
         onValueChange={(v) => setPaymentType(v as "CASH" | "CARD")}
@@ -132,6 +148,7 @@ useEffect(() => {
         </div>
       </RadioGroup>
 
+      {/* Paid / Served */}
       <div className="flex gap-4 mb-4">
         <label className="flex items-center gap-2" style={{ color: "#0284c7" }}>
           <input type="checkbox" checked={paid} onChange={() => setPaid(!paid)} /> Paid
@@ -141,10 +158,12 @@ useEffect(() => {
         </label>
       </div>
 
+      {/* Total */}
       <div className="mb-4 font-semibold" style={{ color: "#15803d", fontSize: 18 }}>
         Total: £{total.toFixed(2)}
       </div>
 
+      {/* Submit */}
       <Button
         onClick={handleSubmit}
         style={{ backgroundColor: "#0f766e", color: "white" }}
