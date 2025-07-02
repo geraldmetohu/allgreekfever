@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Table, Products } from "@prisma/client";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export default function NewOrderPage() {
   const [tables, setTables] = useState<Table[]>([]);
@@ -21,13 +20,19 @@ export default function NewOrderPage() {
 
   useEffect(() => {
     async function fetchData() {
-      const res = await fetch("/api/waitress-tables");
-      const data = await res.json();
-      setTables(data.tables || []);
+      try {
+        const res = await fetch("/api/waitress-tables");
+        const data = await res.json();
+        console.log("Fetched Tables:", data);
+        setTables(data.tables || []);
 
-      const productsRes = await fetch("/api/products");
-      const productData = await productsRes.json();
-      setProducts(productData || []);
+        const productsRes = await fetch("/api/products");
+        const productData = await productsRes.json();
+        console.log("Fetched Products:", productData);
+        setProducts(productData || []);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     }
 
     fetchData();
@@ -57,21 +62,27 @@ export default function NewOrderPage() {
       };
     });
 
-    await fetch("/api/create_order", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        table: tableName,
-        notes,
-        total,
-        paymentType,
-        paid,
-        served,
-        orderItems,
-      }),
-    });
+    try {
+      const response = await fetch("/api/create_order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          table: tableName,
+          notes,
+          total,
+          paymentType,
+          paid,
+          served,
+          orderItems,
+        }),
+      });
 
-    router.push("/bar/orders");
+      const result = await response.json();
+      console.log("Order creation response:", result);
+      router.push("/bar/orders");
+    } catch (error) {
+      console.error("Order creation failed:", error);
+    }
   };
 
   return (
@@ -108,7 +119,7 @@ export default function NewOrderPage() {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: 24 }}>
         {products.map((product) => (
           <div key={product.id} style={{ marginBottom: "16px" }}>
-            <Label style={{ color: "#1e293b" }}>{product.name} (\u00a3{product.price_v})</Label>
+            <Label style={{ color: "#1e293b" }}>{product.name} (£{product.price_v})</Label>
             <select
               value={selectedProducts[product.id] || 0}
               onChange={(e) => handleProductChange(product.id, parseInt(e.target.value))}
@@ -177,7 +188,7 @@ export default function NewOrderPage() {
       </div>
 
       <div style={{ fontWeight: "bold", fontSize: 18, color: "#16a34a", marginBottom: 24 }}>
-        Total: \u00a3{total.toFixed(2)}
+        Total: £{total.toFixed(2)}
       </div>
 
       <Button

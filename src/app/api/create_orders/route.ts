@@ -2,42 +2,45 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
-export async function POST(req: Request) {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
+export async function GET() {
+  try {
+    const { getUser } = getKindeServerSession();
+    const user = await getUser();
 
-  if (!user?.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+    if (!user?.email) {
+      console.error("Missing user email");
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  const waitress = await prisma.staff.findFirst({
-    where: { email: user.email },
-  });
+    const staff = await prisma.staff.findFirst({
+      where: { email: user.email },
+      select: { eventId: true },
+    });
 
-  if (!waitress) {
-    return NextResponse.json({ error: "Waitress not found" }, { status: 404 });
-  }
+    if (!staff?.eventId) {
+      console.warn("No event found for staff");
+      return NextResponse.json({ tables: [] });
+    }
 
-  const body = await req.json();
-
-  const order = await prisma.orders.create({
-    data: {
-      table: body.table,
-      notes: body.notes,
-      total: body.total,
-      paid: body.paid,
-      served: body.served,
-      paymentType: body.paymentType,
-      waitress: { connect: { id: waitress.id } },
-      orderItems: {
-        create: body.orderItems.map((item: any) => ({
-          product: { connect: { id: item.productId } },
-          quantity: item.quantity,
-          price: item.price,
-        })),
+    const tables = await prisma.table.findMany({
+      where: {
+        plan: {
+          eventId: staff.eventId,
+        },
       },
-    },
-  });
+      select: {
+        id: true,
+        name: true,
+      },
+      orderBy: {
+        name: "asc",
+      },
+    });
 
-  return NextResponse.json(order);
+    console.log("Returning tables:", tables);
+    return NextResponse.json({ tables });
+  } catch (error) {
+    console.error("Error in GET /api/waitress-tables:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }
