@@ -1042,32 +1042,6 @@ type CreateOrderInput = {
   }[];
 };
 
-export async function createOrder(data: CreateOrderInput) {
-  const order = await prisma.orders.create({
-    data: {
-      table: data.table,
-      notes: data.notes,
-      total: data.total,
-      paid: data.paid,
-      served: data.served,
-      paymentType: data.paymentType,
-      waitress: {
-        connect: {
-          id: "demo-waitress-id", // Replace with actual user/waitress selection logic
-        },
-      },
-      orderItems: {
-        create: data.orderItems.map((item) => ({
-          product: { connect: { id: item.productId } },
-          quantity: item.quantity,
-          price: item.price,
-        })),
-      },
-    },
-  });
-
-  return order;
-}
 
 
 export async function getOrders() {

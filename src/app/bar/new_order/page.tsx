@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Table, Products } from "@prisma/client";
-import { createOrder } from "@/app/actions";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export default function NewOrderPage() {
@@ -21,22 +20,18 @@ export default function NewOrderPage() {
   const router = useRouter();
 
   useEffect(() => {
-  async function fetchData() {
-    const res = await fetch("/api/waitress-tables");
-    const data = await res.json();
-    console.log("Tables fetched:", data.tables);
-    setTables(data.tables || []);
+    async function fetchData() {
+      const res = await fetch("/api/waitress-tables");
+      const data = await res.json();
+      setTables(data.tables || []);
 
-    const productsRes = await fetch("/api/products");
-    const productData = await productsRes.json();
-    console.log("Products fetched:", productData);
-    setProducts(productData || []);
-  }
+      const productsRes = await fetch("/api/products");
+      const productData = await productsRes.json();
+      setProducts(productData || []);
+    }
 
-  fetchData();
-}, []);
-
-
+    fetchData();
+  }, []);
 
   const total = Object.entries(selectedProducts).reduce((acc, [id, qty]) => {
     const prod = products.find((p) => p.id === id);
@@ -62,14 +57,18 @@ export default function NewOrderPage() {
       };
     });
 
-    await createOrder({
-      table: tableName, // ✅ Save name, not ID
-      notes,
-      total,
-      paymentType,
-      paid,
-      served,
-      orderItems,
+    await fetch("/api/create_order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        table: tableName,
+        notes,
+        total,
+        paymentType,
+        paid,
+        served,
+        orderItems,
+      }),
     });
 
     router.push("/bar/orders");
@@ -77,12 +76,11 @@ export default function NewOrderPage() {
 
   return (
     <div style={{ maxWidth: "800px", margin: "0 auto", padding: "24px" }}>
-      <h2 style={{ fontSize: 24, fontWeight: "bold", color: "#1e40af", marginBottom: 24 }}>
+      <h2 style={{ fontSize: 24, fontWeight: "bold", color: "#0c4a6e", marginBottom: 24 }}>
         New Order
       </h2>
 
-      {/* Table Dropdown */}
-      <Label style={{ color: "#0f172a", marginBottom: 8 }}>Table</Label>
+      <Label style={{ color: "#334155", marginBottom: 8 }}>Table</Label>
       <select
         value={selectedTableId}
         onChange={(e) => setSelectedTableId(e.target.value)}
@@ -92,48 +90,47 @@ export default function NewOrderPage() {
           marginBottom: "24px",
           borderRadius: "6px",
           border: "1px solid #94a3b8",
-          backgroundColor: "#f1f5f9",
+          backgroundColor: "#f8fafc",
+          color: "#1e293b",
         }}
       >
-        <option value="">Select a table</option>
+        <option value="" style={{ color: "#64748b" }}>Select a table</option>
         {tables.map((table) => (
-          <option key={table.id} value={table.id}>
+          <option key={table.id} value={table.id} style={{ color: "#1e293b" }}>
             {table.name}
           </option>
         ))}
       </select>
 
-      {/* Product Cards */}
       <Label style={{ display: "block", color: "#0f172a", fontSize: 18, marginBottom: 12 }}>
         Select Products
       </Label>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: 24 }}>
-{products.map((product) => (
-  <div key={product.id} style={{ marginBottom: "16px" }}>
-    <Label style={{ color: "#1e293b" }}>{product.name} (£{product.price_v})</Label>
-    <select
-      value={selectedProducts[product.id] || 0}
-      onChange={(e) => handleProductChange(product.id, parseInt(e.target.value))}
-      style={{
-        width: "100%",
-        padding: "8px",
-        borderRadius: "6px",
-        border: "1px solid #cbd5e1",
-        backgroundColor: "#f1f5f9",
-      }}
-    >
-      {[...Array(11)].map((_, i) => (
-        <option key={i} value={i}>
-          {i}
-        </option>
-      ))}
-    </select>
-  </div>
-))}
-
+        {products.map((product) => (
+          <div key={product.id} style={{ marginBottom: "16px" }}>
+            <Label style={{ color: "#1e293b" }}>{product.name} (\u00a3{product.price_v})</Label>
+            <select
+              value={selectedProducts[product.id] || 0}
+              onChange={(e) => handleProductChange(product.id, parseInt(e.target.value))}
+              style={{
+                width: "100%",
+                padding: "8px",
+                borderRadius: "6px",
+                border: "1px solid #cbd5e1",
+                backgroundColor: "#f1f5f9",
+                color: "#1e293b",
+              }}
+            >
+              {[...Array(11)].map((_, i) => (
+                <option key={i} value={i}>
+                  {i}
+                </option>
+              ))}
+            </select>
+          </div>
+        ))}
       </div>
 
-      {/* Notes */}
       <Label style={{ color: "#0f172a", marginBottom: 8 }}>Notes</Label>
       <Textarea
         value={notes}
@@ -144,10 +141,10 @@ export default function NewOrderPage() {
           border: "1px solid #cbd5e1",
           backgroundColor: "#f1f5f9",
           marginBottom: 24,
+          color: "#1e293b",
         }}
       />
 
-      {/* Payment Type */}
       <Label style={{ color: "#0f172a", marginBottom: 8 }}>Payment Method</Label>
       <div style={{ display: "flex", gap: "20px", marginBottom: 24 }}>
         <label style={{ display: "flex", alignItems: "center", gap: "8px", color: "#1e3a8a" }}>
@@ -170,7 +167,6 @@ export default function NewOrderPage() {
         </label>
       </div>
 
-      {/* Paid / Served */}
       <div style={{ display: "flex", gap: "20px", marginBottom: 24 }}>
         <label style={{ color: "#0ea5e9" }}>
           <input type="checkbox" checked={paid} onChange={() => setPaid(!paid)} /> Paid
@@ -180,12 +176,10 @@ export default function NewOrderPage() {
         </label>
       </div>
 
-      {/* Total */}
       <div style={{ fontWeight: "bold", fontSize: 18, color: "#16a34a", marginBottom: 24 }}>
-        Total: £{total.toFixed(2)}
+        Total: \u00a3{total.toFixed(2)}
       </div>
 
-      {/* Submit Button */}
       <Button
         onClick={handleSubmit}
         disabled={!selectedTableId || total === 0}
@@ -202,4 +196,3 @@ export default function NewOrderPage() {
     </div>
   );
 }
-
