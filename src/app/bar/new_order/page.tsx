@@ -25,8 +25,12 @@ export default function NewOrderPage() {
       const res = await fetch("/api/waitress-tables");
       const data = await res.json();
       setTables(data.tables);
-      setProducts(await (await fetch("/api/products")).json());
+
+      const productsRes = await fetch("/api/products");
+      const productData = await productsRes.json();
+      setProducts(productData);
     }
+
     fetchData();
   }, []);
 
@@ -40,6 +44,8 @@ export default function NewOrderPage() {
   };
 
   const handleSubmit = async () => {
+    if (!selectedTable || total === 0) return;
+
     const orderItems = Object.entries(selectedProducts).map(([productId, quantity]) => {
       const product = products.find((p) => p.id === productId);
       return {
@@ -50,7 +56,7 @@ export default function NewOrderPage() {
     });
 
     await createOrder({
-      table: selectedTable,
+      table: selectedTable, // <- This is table.id
       notes,
       total,
       paymentType,
@@ -64,27 +70,25 @@ export default function NewOrderPage() {
 
   return (
     <div className="max-w-3xl mx-auto p-6">
-      <h2 style={{ fontSize: 24, fontWeight: "bold", color: "#1e40af", marginBottom: 16 }}>
-        New Order
-      </h2>
+      <h2 className="text-2xl font-bold text-blue-900 mb-6">New Order</h2>
 
-      {/* Table selection */}
-      <Label style={{ color: "#0f172a" }}>Table</Label>
+      {/* Table Selection */}
+      <Label className="text-slate-800 mb-1">Table</Label>
       <select
         value={selectedTable}
         onChange={(e) => setSelectedTable(e.target.value)}
-        className="w-full p-2 mb-4 border rounded"
-        style={{ borderColor: "#94a3b8", backgroundColor: "#f1f5f9" }}
+        className="w-full p-2 mb-4 border rounded bg-slate-100 border-slate-300"
       >
         <option value="">Select a table</option>
         {tables.map((table) => (
-          <option key={table.id} value={table.name}>
+          <option key={table.id} value={table.id}>
             {table.name}
           </option>
         ))}
       </select>
 
       {/* Product Selection */}
+      <Label className="block text-lg text-slate-800 mb-2">Select Products</Label>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         {products.map((product) => {
           const qty = selectedProducts[product.id] || 0;
@@ -121,7 +125,7 @@ export default function NewOrderPage() {
       </div>
 
       {/* Notes */}
-      <Label style={{ color: "#0f172a" }}>Notes</Label>
+      <Label className="text-slate-800">Notes</Label>
       <Textarea
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
@@ -135,37 +139,38 @@ export default function NewOrderPage() {
         onValueChange={(v) => setPaymentType(v as "CASH" | "CARD")}
         className="mb-4"
       >
-        <Label className="mr-4" style={{ color: "#0c4a6e" }}>Payment Method:</Label>
+        <Label className="mr-4 text-sky-900">Payment Method:</Label>
         <div className="flex gap-4">
           <div className="flex items-center gap-2">
             <RadioGroupItem value="CASH" id="cash" />
-            <Label htmlFor="cash" style={{ color: "#6b7280" }}>Cash</Label>
+            <Label htmlFor="cash" className="text-gray-500">Cash</Label>
           </div>
           <div className="flex items-center gap-2">
             <RadioGroupItem value="CARD" id="card" />
-            <Label htmlFor="card" style={{ color: "#6b7280" }}>Card</Label>
+            <Label htmlFor="card" className="text-gray-500">Card</Label>
           </div>
         </div>
       </RadioGroup>
 
       {/* Paid / Served */}
       <div className="flex gap-4 mb-4">
-        <label className="flex items-center gap-2" style={{ color: "#0284c7" }}>
+        <label className="flex items-center gap-2 text-sky-600">
           <input type="checkbox" checked={paid} onChange={() => setPaid(!paid)} /> Paid
         </label>
-        <label className="flex items-center gap-2" style={{ color: "#8b5cf6" }}>
+        <label className="flex items-center gap-2 text-purple-500">
           <input type="checkbox" checked={served} onChange={() => setServed(!served)} /> Served
         </label>
       </div>
 
       {/* Total */}
-      <div className="mb-4 font-semibold" style={{ color: "#15803d", fontSize: 18 }}>
+      <div className="mb-4 font-semibold text-green-700 text-lg">
         Total: £{total.toFixed(2)}
       </div>
 
-      {/* Submit */}
+      {/* Submit Button */}
       <Button
         onClick={handleSubmit}
+        disabled={!selectedTable || total === 0}
         style={{ backgroundColor: "#0f766e", color: "white" }}
       >
         Submit Order
