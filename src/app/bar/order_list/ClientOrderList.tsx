@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -11,27 +10,25 @@ interface FullOrder extends Orders {
   waitress: Staff;
 }
 
-export default function ClientOrderList({ isBartender, userEmail }: { isBartender: boolean, userEmail: string }) {
+export default function ClientOrderList({ isBartender, userEmail }: { isBartender: boolean; userEmail: string }) {
   const [orders, setOrders] = useState<FullOrder[]>([]);
   const [lastSeenId, setLastSeenId] = useState<string | null>(null);
   const notificationRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
-      const res = await fetch("/api/bar_orders");
+      const res = await fetch("/api/orders");
       if (res.ok) {
         const data = await res.json();
         if (orders.length && data.length && isBartender) {
-          const latestNew = data.find((o: FullOrder) => !orders.some(old => old.id === o.id));
-          if (latestNew && latestNew.waitress.email !== userEmail) {
+          const newOne = data.find((o: FullOrder) => !orders.some(old => old.id === o.id));
+          if (newOne && newOne.waitress.email !== userEmail) {
             notificationRef.current?.play();
             toast.success("New order received");
           }
         }
         setOrders(data);
-        if (!lastSeenId && data.length) {
-          setLastSeenId(data[0].id);
-        }
+        if (!lastSeenId && data.length) setLastSeenId(data[0].id);
       }
     };
 
@@ -50,6 +47,8 @@ export default function ClientOrderList({ isBartender, userEmail }: { isBartende
     if (res.ok) {
       const updated = await res.json();
       setOrders(prev => prev.map(o => o.id === id ? { ...o, ...updated } : o));
+    } else {
+      toast.error("Failed to update order status");
     }
   };
 
@@ -82,12 +81,14 @@ export default function ClientOrderList({ isBartender, userEmail }: { isBartende
                 )}
               >
                 <td className="border p-2">{order.table}</td>
-                <td className="border p-2">{order.waitress.name} ({order.waitress.email})</td>
+                <td className="border p-2">
+                  {order.waitress.name} ({order.waitress.email})
+                </td>
                 <td className="border p-2">
                   <ul>
                     {order.orderItems.map(item => (
                       <li key={item.id}>
-                        {item.product.name} x {item.quantity} (£{item.price.toFixed(2)})
+                        {item.product.name} × {item.quantity} (£{item.price.toFixed(2)})
                       </li>
                     ))}
                   </ul>
@@ -102,13 +103,13 @@ export default function ClientOrderList({ isBartender, userEmail }: { isBartende
                 {isBartender && (
                   <td className="border p-2 space-y-2">
                     <button
-                      className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded block"
+                      className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded block w-full"
                       onClick={() => toggleOrder(order.id, { paid: !order.paid })}
                     >
                       {order.paid ? "Unmark Paid" : "Mark Paid"}
                     </button>
                     <button
-                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded block"
+                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded block w-full"
                       onClick={() => toggleOrder(order.id, { served: !order.served })}
                     >
                       {order.served ? "Unmark Served" : "Mark Served"}

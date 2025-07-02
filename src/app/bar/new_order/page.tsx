@@ -79,7 +79,7 @@ export default function NewOrderPage() {
 
       const result = await response.json();
       console.log("Order creation response:", result);
-      router.push("/bar/orders");
+      router.push("/bar/order_list");
     } catch (error) {
       console.error("Order creation failed:", error);
     }

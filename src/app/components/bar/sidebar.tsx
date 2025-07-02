@@ -15,6 +15,8 @@ import {
   icons,
   BadgePoundSterlingIcon,
   Table,
+  SettingsIcon,
+  PanelsLeftRightIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
@@ -27,6 +29,8 @@ const navItems = [
   { href: "/bar/new_order", label: "New Order", icon: LayoutGrid },
   { href: "/bar/product_list", label: "All Products", icon: FaGlassMartini },
   { href: "/bar/table_plan", label: "See Table Plan", icon: Table },
+  { href: "/admin", label: "Admin Only", icon: SettingsIcon},
+  { href: "/", label: "WEBSITE", icon: PanelsLeftRightIcon}
 
 ];
 

@@ -15,6 +15,9 @@ import {
   icons,
   BadgePoundSterlingIcon,
   GlassWater,
+  SettingsIcon,
+  LucideListOrdered,
+  PanelsLeftRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
@@ -30,7 +33,9 @@ const navItems = [
   { href: "/admin/memory", label: "Memories", icon: Image },
   { href: "/admin/staff", label: "Staff", icon: Grape},
   {href: "/admin/orders", label: "Orders", icon: BadgePoundSterlingIcon},
-  {href: "/admin/products", label: "Products", icon: GlassWater}
+  {href: "/admin/products", label: "Products", icon: GlassWater},
+  { href: "/bar", label: "Bar Page", icon: LucideListOrdered},
+  { href: "/", label: "WEBSITE", icon: PanelsLeftRight}
 ];
 
 export function Sidebar() {
