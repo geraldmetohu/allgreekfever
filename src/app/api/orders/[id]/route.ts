@@ -3,25 +3,24 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+  const { id } = params;
+  const data = await req.json();
+
   try {
-    const { id } = params;
-    const body = await req.json();
-
-    if (!id) {
-      return NextResponse.json({ error: "Order ID not provided" }, { status: 400 });
-    }
-
     const updatedOrder = await prisma.orders.update({
       where: { id },
       data: {
-        ...(body.paid !== undefined && { paid: body.paid }),
-        ...(body.served !== undefined && { served: body.served }),
+        ...(data.paid !== undefined && { paid: data.paid }),
+        ...(data.served !== undefined && { served: data.served }),
       },
     });
 
     return NextResponse.json(updatedOrder);
   } catch (error) {
-    console.error("Error updating order:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error("PUT /api/orders/[id] failed:", error);
+    return NextResponse.json(
+      { error: "Update failed", details: String(error) },
+      { status: 500 }
+    );
   }
 }

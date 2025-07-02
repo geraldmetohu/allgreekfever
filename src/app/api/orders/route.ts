@@ -48,28 +48,3 @@ export async function GET() {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
-
-export async function PUT(req: Request) {
-  try {
-    const url = new URL(req.url);
-    const id = url.pathname.split("/").pop();
-    const body = await req.json();
-
-    if (!id) {
-      return NextResponse.json({ error: "Order ID not provided" }, { status: 400 });
-    }
-
-    const updatedOrder = await prisma.orders.update({
-      where: { id },
-      data: {
-        ...(body.paid !== undefined && { paid: body.paid }),
-        ...(body.served !== undefined && { served: body.served }),
-      },
-    });
-
-    return NextResponse.json(updatedOrder);
-  } catch (error) {
-    console.error("Error updating order:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-  }
-}
