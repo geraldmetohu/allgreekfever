@@ -63,44 +63,63 @@ export default function NewOrderPage() {
     setOrderItems((prev) => [...prev, { productId: "", quantity: 1 }]);
   };
 
-  const handleSubmit = async () => {
-    if (!selectedTableId || total === 0) return;
+const handleSubmit = async () => {
+  if (!selectedTableId) return;
 
-    const table = tables.find((t) => t.id === selectedTableId);
-    const tableName = table?.name || "Unknown";
+  const table = tables.find((t) => t.id === selectedTableId);
+  const tableName = table?.name || "Unknown";
 
-    const formattedItems = orderItems
-      .filter((item) => item.productId && item.quantity > 0)
-      .map((item) => {
-        const product = products.find((p) => p.id === item.productId);
-        return {
-          productId: item.productId,
-          quantity: item.quantity,
-          price: product?.price_v || 0,
-        };
-      });
+  // Choose price key based on table name
+  function getPriceKey(name: string): "price_v" | "price_g" | "price_s" | "price_b" {
+    const lower = name.toLowerCase();
+    if (lower.includes("vip")) return "price_v";
+    if (lower.includes("gold")) return "price_g";
+    if (lower.includes("silver")) return "price_s";
+    if (lower.includes("bronze")) return "price_b";
+    return "price_v"; // fallback
+  }
 
-    try {
-      const response = await fetch("/api/create_order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          table: tableName,
-          notes,
-          total,
-          paymentType,
-          paid,
-          served,
-          orderItems: formattedItems,
-        }),
-      });
+  const priceKey = getPriceKey(tableName);
 
-      const result = await response.json();
-      router.push("/bar/order_list");
-    } catch (error) {
-      console.error("Order creation failed:", error);
-    }
-  };
+  // Format items with correct prices
+  const formattedItems = orderItems
+    .filter((item) => item.productId && item.quantity > 0)
+    .map((item) => {
+      const product = products.find((p) => p.id === item.productId);
+      return {
+        productId: item.productId,
+        quantity: item.quantity,
+        price: product?.[priceKey] || 0,
+      };
+    });
+
+  // 🔁 Recalculate total based on selected price key
+  const total = formattedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  if (total === 0) return;
+
+  try {
+    const response = await fetch("/api/create_order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        table: tableName,
+        notes,
+        total,
+        paymentType,
+        paid,
+        served,
+        orderItems: formattedItems,
+      }),
+    });
+
+    const result = await response.json();
+    router.push("/bar/order_list");
+  } catch (error) {
+    console.error("Order creation failed:", error);
+  }
+};
+
 return (
   <div style={{ maxWidth: "800px", margin: "0 auto", padding: "16px", color: "#0a0a0a" }}>
     <h2 style={{ fontSize: 24, fontWeight: "bold", color: "#0c4a6e", marginBottom: 20 }}>
