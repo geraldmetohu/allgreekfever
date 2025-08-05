@@ -1,5 +1,4 @@
 // file: src/app/bar/table_plan/page.tsx
-
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/db";
@@ -35,36 +34,42 @@ export default async function TablePlanPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4 text-black">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+      <h1 className="text-xl sm:text-2xl font-bold mb-6 text-center text-slate-800">
         Table Layout for: <span className="text-red-600">{staff.event.name}</span>
       </h1>
 
-      <div className="w-full flex justify-center items-center bg-white rounded border overflow-hidden">
+      <div className="w-full overflow-auto border rounded bg-white p-4 shadow-sm">
         <div
-          className="relative"
+          className="relative mx-auto"
           style={{
             width: `${tablesRes.width * 20}px`,
             height: `${tablesRes.height * 20}px`,
+            minWidth: "320px",
+            backgroundColor: "#f8fafc",
           }}
         >
           {tablesRes.tables.map((table) => (
             <div
               key={table.id}
-              className="absolute text-[10px] text-white flex items-center justify-center font-medium shadow"
+              className="absolute text-[10px] sm:text-[12px] flex items-center justify-center font-semibold shadow-md border"
               style={{
                 top: `${table.startY * 20}px`,
                 left: `${table.startX * 20}px`,
                 width: `${table.width * 20}px`,
                 height: `${table.height * 20}px`,
                 borderRadius: table.rounded ? "999px" : "6px",
-                backgroundColor: table.booked && table.name !== "Any" ? "#9ca3af" : table.color.toLowerCase(),
+                backgroundColor:
+                  table.booked && table.name !== "Any"
+                    ? "#9ca3af"
+                    : table.color.toLowerCase(),
                 transform:
                   table.position === "DIAGONAL"
                     ? "rotate(45deg)"
                     : table.position === "HORIZONTAL"
                     ? "rotate(0deg)"
                     : "rotate(90deg)",
+                color: "#ffffff",
               }}
             >
               {table.name}
@@ -75,3 +80,4 @@ export default async function TablePlanPage() {
     </div>
   );
 }
+

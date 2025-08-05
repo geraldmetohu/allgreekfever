@@ -7,11 +7,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Table, Products } from "@prisma/client";
 
+type OrderItemForm = {
+  productId: string;
+  quantity: number;
+};
+
 export default function NewOrderPage() {
   const [tables, setTables] = useState<Table[]>([]);
   const [products, setProducts] = useState<Products[]>([]);
   const [selectedTableId, setSelectedTableId] = useState<string>("");
-  const [selectedProducts, setSelectedProducts] = useState<{ [key: string]: number }>({});
+  const [orderItems, setOrderItems] = useState<OrderItemForm[]>([{ productId: "", quantity: 1 }]);
   const [notes, setNotes] = useState<string>("");
   const [paymentType, setPaymentType] = useState<"CASH" | "CARD">("CASH");
   const [paid, setPaid] = useState(false);
@@ -23,12 +28,10 @@ export default function NewOrderPage() {
       try {
         const res = await fetch("/api/waitress_tables");
         const data = await res.json();
-        console.log("Fetched Tables:", data);
         setTables(data.tables || []);
 
         const productsRes = await fetch("/api/products");
         const productData = await productsRes.json();
-        console.log("Fetched Products:", productData);
         setProducts(productData || []);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -38,13 +41,26 @@ export default function NewOrderPage() {
     fetchData();
   }, []);
 
-  const total = Object.entries(selectedProducts).reduce((acc, [id, qty]) => {
-    const prod = products.find((p) => p.id === id);
-    return acc + (prod ? prod.price_v * qty : 0);
+  const total = orderItems.reduce((acc, item) => {
+    const product = products.find((p) => p.id === item.productId);
+    return acc + (product ? product.price_v * item.quantity : 0);
   }, 0);
 
-  const handleProductChange = (productId: string, quantity: number) => {
-    setSelectedProducts((prev) => ({ ...prev, [productId]: quantity }));
+  const handleItemChange = (index: number, field: "productId" | "quantity", value: string | number) => {
+  const updatedItems = [...orderItems];
+
+  if (field === "quantity") {
+    updatedItems[index].quantity = Number(value);
+  } else {
+    updatedItems[index].productId = String(value);
+  }
+
+  setOrderItems(updatedItems);
+};
+
+
+  const handleAddItem = () => {
+    setOrderItems((prev) => [...prev, { productId: "", quantity: 1 }]);
   };
 
   const handleSubmit = async () => {
@@ -53,14 +69,16 @@ export default function NewOrderPage() {
     const table = tables.find((t) => t.id === selectedTableId);
     const tableName = table?.name || "Unknown";
 
-    const orderItems = Object.entries(selectedProducts).map(([productId, quantity]) => {
-      const product = products.find((p) => p.id === productId);
-      return {
-        productId,
-        quantity,
-        price: product?.price_v || 0,
-      };
-    });
+    const formattedItems = orderItems
+      .filter((item) => item.productId && item.quantity > 0)
+      .map((item) => {
+        const product = products.find((p) => p.id === item.productId);
+        return {
+          productId: item.productId,
+          quantity: item.quantity,
+          price: product?.price_v || 0,
+        };
+      });
 
     try {
       const response = await fetch("/api/create_order", {
@@ -73,12 +91,11 @@ export default function NewOrderPage() {
           paymentType,
           paid,
           served,
-          orderItems,
+          orderItems: formattedItems,
         }),
       });
 
       const result = await response.json();
-      console.log("Order creation response:", result);
       router.push("/bar/order_list");
     } catch (error) {
       console.error("Order creation failed:", error);
@@ -86,103 +103,105 @@ export default function NewOrderPage() {
   };
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "24px" }}>
-      <h2 style={{ fontSize: 24, fontWeight: "bold", color: "#0c4a6e", marginBottom: 24 }}>
+    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "16px" }}>
+      <h2 style={{ fontSize: 24, fontWeight: "bold", color: "#0c4a6e", marginBottom: 20 }}>
         New Order
       </h2>
 
-      <Label style={{ color: "#334155", marginBottom: 8 }}>Table</Label>
+      <Label style={{ marginBottom: 6 }}>Table</Label>
       <select
         value={selectedTableId}
         onChange={(e) => setSelectedTableId(e.target.value)}
         style={{
           width: "100%",
           padding: "10px",
-          marginBottom: "24px",
+          marginBottom: "16px",
           borderRadius: "6px",
           border: "1px solid #94a3b8",
-          backgroundColor: "#f8fafc",
-          color: "#1e293b",
         }}
       >
-        <option value="" style={{ color: "#64748b" }}>Select a table</option>
+        <option value="">Select a table</option>
         {tables.map((table) => (
-          <option key={table.id} value={table.id} style={{ color: "#1e293b" }}>
+          <option key={table.id} value={table.id}>
             {table.name}
           </option>
         ))}
       </select>
 
-      <Label style={{ display: "block", color: "#0f172a", fontSize: 18, marginBottom: 12 }}>
-        Select Products
-      </Label>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: 24 }}>
-        {products.map((product) => (
-          <div key={product.id} style={{ marginBottom: "16px" }}>
-            <Label style={{ color: "#1e293b" }}>{product.name} (£{product.price_v})</Label>
+      <Label style={{ fontSize: 18, marginBottom: 12 }}>Products</Label>
+      <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 24 }}>
+        {orderItems.map((item, index) => (
+          <div
+            key={index}
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 12,
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
             <select
-              value={selectedProducts[product.id] || 0}
-              onChange={(e) => handleProductChange(product.id, parseInt(e.target.value))}
+              value={item.productId}
+              onChange={(e) => handleItemChange(index, "productId", e.target.value)}
               style={{
-                width: "100%",
+                flex: "2",
                 padding: "8px",
                 borderRadius: "6px",
                 border: "1px solid #cbd5e1",
-                backgroundColor: "#f1f5f9",
-                color: "#1e293b",
               }}
             >
-              {[...Array(11)].map((_, i) => (
-                <option key={i} value={i}>
-                  {i}
+              <option value="">Select product</option>
+              {products.map((product) => (
+                <option key={product.id} value={product.id}>
+                  {product.name} (£{product.price_v})
                 </option>
               ))}
             </select>
+
+            <input
+              type="number"
+              min={1}
+              max={20}
+              value={item.quantity}
+              onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
+              style={{
+                flex: "1",
+                padding: "8px",
+                borderRadius: "6px",
+                border: "1px solid #cbd5e1",
+              }}
+            />
           </div>
         ))}
       </div>
 
-      <Label style={{ color: "#0f172a", marginBottom: 8 }}>Notes</Label>
+      <Button variant="outline" onClick={handleAddItem} style={{ marginBottom: 24 }}>
+        ➕ Add Another Product
+      </Button>
+
+      <Label style={{ marginBottom: 8 }}>Notes</Label>
       <Textarea
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
-        style={{
-          width: "100%",
-          padding: "10px",
-          border: "1px solid #cbd5e1",
-          backgroundColor: "#f1f5f9",
-          marginBottom: 24,
-          color: "#1e293b",
-        }}
+        style={{ width: "100%", marginBottom: 24 }}
       />
 
-      <Label style={{ color: "#0f172a", marginBottom: 8 }}>Payment Method</Label>
-      <div style={{ display: "flex", gap: "20px", marginBottom: 24 }}>
-        <label style={{ display: "flex", alignItems: "center", gap: "8px", color: "#1e3a8a" }}>
-          <input
-            type="radio"
-            value="CASH"
-            checked={paymentType === "CASH"}
-            onChange={() => setPaymentType("CASH")}
-          />
-          Cash
+      <Label style={{ marginBottom: 8 }}>Payment Method</Label>
+      <div style={{ display: "flex", gap: "20px", marginBottom: 16 }}>
+        <label>
+          <input type="radio" checked={paymentType === "CASH"} onChange={() => setPaymentType("CASH")} /> Cash
         </label>
-        <label style={{ display: "flex", alignItems: "center", gap: "8px", color: "#1e3a8a" }}>
-          <input
-            type="radio"
-            value="CARD"
-            checked={paymentType === "CARD"}
-            onChange={() => setPaymentType("CARD")}
-          />
-          Card
+        <label>
+          <input type="radio" checked={paymentType === "CARD"} onChange={() => setPaymentType("CARD")} /> Card
         </label>
       </div>
 
-      <div style={{ display: "flex", gap: "20px", marginBottom: 24 }}>
-        <label style={{ color: "#0ea5e9" }}>
+      <div style={{ display: "flex", gap: "20px", marginBottom: 16 }}>
+        <label>
           <input type="checkbox" checked={paid} onChange={() => setPaid(!paid)} /> Paid
         </label>
-        <label style={{ color: "#8b5cf6" }}>
+        <label>
           <input type="checkbox" checked={served} onChange={() => setServed(!served)} /> Served
         </label>
       </div>
@@ -199,7 +218,6 @@ export default function NewOrderPage() {
           color: "white",
           padding: "10px 20px",
           borderRadius: "6px",
-          fontWeight: "bold",
         }}
       >
         Submit Order

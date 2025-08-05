@@ -12,7 +12,7 @@ export async function PUT(req: NextRequest, context: any) {
         ...(data.paid !== undefined && { paid: data.paid }),
         ...(data.served !== undefined && { served: data.served }),
       },
-    });
+    }); 
 
     return NextResponse.json(updatedOrder);
   } catch (error) {

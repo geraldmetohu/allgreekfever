@@ -30,3 +30,5 @@ export async function POST(req: Request) {
   }
 }
 
+
+//Creates a new staff member in the database. Accepts name, email, role, optional event ID, and active status. Used for adding bartenders, waitresses, or other staff from the admin panel.

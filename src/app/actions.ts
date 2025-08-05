@@ -15,7 +15,34 @@ import { v4 as uuid } from 'uuid';
 import Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 
+type CreateOrderInput = {
+  table: string;
+  notes?: string;
+  total: number;
+  paymentType: "CASH" | "CARD";
+  paid: boolean;
+  served: boolean;
+  orderItems: {
+    productId: string;
+    quantity: number;
+    price: number;
+  }[];
+};
 
+const schema = z.object({
+  planId: z.string().min(1),
+  width: z.number().int().min(1),
+  height: z.number().int().min(1),
+});
+
+//ADMIN PAGE
+
+////-----------------------/////
+
+
+
+
+//BANNERS//
 export async function getBanners() {
   const banners = await prisma.banner.findMany({
     orderBy: {
@@ -110,6 +137,11 @@ if (!user || !adminEmails.includes(user.email!)) {
 
   redirect("/admin/banner");
 }
+
+
+
+
+//EVENTS//
 
 export async function CreateEvent(_: unknown, formData: FormData) {
   const { getUser } = getKindeServerSession();
@@ -223,6 +255,8 @@ export async function deleteEvent(formData: FormData) {
   revalidatePath('/admin/events');
 }
 
+
+
 export async function getAllEvents() {
   return await prisma.event.findMany({
     select: {
@@ -234,6 +268,11 @@ export async function getAllEvents() {
     },
   });
 }
+
+
+
+
+//BOOKINGS//
 
 export async function EditBooking(prevState: any, formData: FormData) {
     const { getUser } = getKindeServerSession();
@@ -336,7 +375,53 @@ if (!user || !adminEmails.includes(user.email!)) {
   redirect("/admin/booking");
 }
 
+export async function getBooking(bookingId: string) {
+  const data = await prisma.booking.findUnique({
+    where: { id: bookingId },
+    select: {
+      id: true,
+      paid: true,
+      date: true,
+      time: true,
+      customer: true,
+      email: true,
+      phone: true,
+      tickets: true,
+      total: true,
+      tableId: true,
+      eventId: true,
+      table: {
+        select: { name: true },
+      },
+      event: {
+        select: { name: true },
+      },
+    },
+  });
 
+  if (!data) return null;
+
+  return {
+    ...data,
+    tableName: data.table?.name || "",
+    eventName: data.event?.name || "",
+    phone: data.phone ?? undefined,
+  };
+}
+
+export async function getBookingDraft(userId: string): Promise<BookingDraft | null> {
+  if (!userId) return null;
+
+  const key = `booking-${userId}`;
+  const data = await redis.get<BookingDraft>(key);
+
+  if (!data || typeof data !== "object") return null;
+
+  return data;
+}
+
+
+//POSTERS//
 
 export async function CreatePoster(_prevState: any, formData: FormData) {
   const { getUser } = getKindeServerSession();
@@ -389,6 +474,12 @@ if (!user || !adminEmails.includes(user.email!)) {
   redirect("/admin/poster");
 }
 
+
+
+
+
+
+//MEMORIES//
 
 export async function CreateMemory(
   _prevState: any,
@@ -448,13 +539,46 @@ if (!user || !adminEmails.includes(user.email!)) {
   return redirect("/admin/memory");
 }
 
+export async function getAllMemories(): Promise<Memory[]> {
+  try {
+    const memories = await prisma.memory.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+
+    return memories.map((m) => ({
+      ...m,
+      createdAt: m.createdAt.toISOString(), // convert Date to string
+    }));
+  } catch (error) {
+    console.error("Error fetching memories:", error);
+    return [];
+  }
+}
+
+export async function createMemory(formData: FormData) {
+  const parsed = memorySchema.safeParse({
+    title: formData.get("title"),
+    description: formData.get("description"),
+    mediaUrl: formData.get("mediaUrl"),
+    eventName: formData.get("eventName"),
+  });
+
+  if (!parsed.success) {
+    throw new Error("Invalid memory data: " + JSON.stringify(parsed.error.format()));
+  }
+
+  const data = parsed.data;
+
+  // Use `data` to insert into Prisma
+}
 
 
-const schema = z.object({
-  planId: z.string().min(1),
-  width: z.number().int().min(1),
-  height: z.number().int().min(1),
-});
+
+
+
+//PLAN//
+
+
 
 export async function updatePlanNameAndEvent({
   planId,
@@ -500,27 +624,7 @@ if (!user || !adminEmails.includes(user.email!)) {
   return { success: true };
 }
 
-export async function getAllPlans() {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
 
-  if (!user || !ADMIN_EMAILS.includes(user.email!)) {
-    return redirect('/');
-  }
-
-  const plans = await prisma.plan.findMany({
-    orderBy: { createdAt: 'desc' },
-    select: {
-      id: true,
-      name: true,
-      width: true,
-      height: true,
-    },
-  });
-
-  return plans;
-}
-// CREATE NEW PLAN AND DEFAULT TABLE
 export async function createPlan({
   name,
   width,
@@ -564,7 +668,7 @@ export async function createPlan({
   revalidatePath("/admin/planner");
   return newPlan;
 }
-// UPDATE PLAN DIMENSIONS
+
 export async function updatePlanDimensions({
   planId,
   width,
@@ -605,51 +709,32 @@ export async function getFreeTablesByPlan(planId: string) {
     },
   });
 }
+export async function getAllPlans() {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
 
-export async function getBooking(bookingId: string) {
-  const data = await prisma.booking.findUnique({
-    where: { id: bookingId },
+  if (!user || !ADMIN_EMAILS.includes(user.email!)) {
+    return redirect('/');
+  }
+
+  const plans = await prisma.plan.findMany({
+    orderBy: { createdAt: 'desc' },
     select: {
       id: true,
-      paid: true,
-      date: true,
-      time: true,
-      customer: true,
-      email: true,
-      phone: true,
-      tickets: true,
-      total: true,
-      tableId: true,
-      eventId: true,
-      table: {
-        select: { name: true },
-      },
-      event: {
-        select: { name: true },
-      },
+      name: true,
+      width: true,
+      height: true,
     },
   });
 
-  if (!data) return null;
-
-  return {
-    ...data,
-    tableName: data.table?.name || "",
-    eventName: data.event?.name || "",
-    phone: data.phone ?? undefined,
-  };
+  return plans;
 }
+// CREATE NEW PLAN AND DEFAULT TABLE
 
-export async function getBookingDraft(userId: string): Promise<BookingDraft | null> {
-  if (!userId) return null;
 
-  const key = `booking-${userId}`;
-  const data = await redis.get<BookingDraft>(key);
 
-  if (!data || typeof data !== "object") return null;
 
-  return data;
-}
+
 
 export async function getEvents() {
   try {
@@ -776,39 +861,6 @@ export async function addTableToCart(formData: FormData) {
 
 
 
-export async function getAllMemories(): Promise<Memory[]> {
-  try {
-    const memories = await prisma.memory.findMany({
-      orderBy: { createdAt: 'desc' }
-    });
-
-    return memories.map((m) => ({
-      ...m,
-      createdAt: m.createdAt.toISOString(), // convert Date to string
-    }));
-  } catch (error) {
-    console.error("Error fetching memories:", error);
-    return [];
-  }
-}
-
-
-export async function createMemory(formData: FormData) {
-  const parsed = memorySchema.safeParse({
-    title: formData.get("title"),
-    description: formData.get("description"),
-    mediaUrl: formData.get("mediaUrl"),
-    eventName: formData.get("eventName"),
-  });
-
-  if (!parsed.success) {
-    throw new Error("Invalid memory data: " + JSON.stringify(parsed.error.format()));
-  }
-
-  const data = parsed.data;
-
-  // Use `data` to insert into Prisma
-}
 
 
 export async function getEventById(id: string): Promise<Event | null> {
@@ -1028,19 +1080,6 @@ export async function updateQuantity(formData: FormData) {
 
 
 
-type CreateOrderInput = {
-  table: string;
-  notes?: string;
-  total: number;
-  paymentType: "CASH" | "CARD";
-  paid: boolean;
-  served: boolean;
-  orderItems: {
-    productId: string;
-    quantity: number;
-    price: number;
-  }[];
-};
 
 
 
@@ -1063,6 +1102,39 @@ export async function getOrders() {
 }
 
 
+
+
+
+//LOGIN//
+
+export async function getOnlyAdminEmails(): Promise<string[]> {
+  const staticAdmins = ["geraldmetohu@gmail.com", "hasanajaleksios@icloud.com"];
+
+  const dbAdmins = await prisma.staff.findMany({
+    where: { role: "ADMIN" },
+    select: { email: true },
+  });
+
+  const dynamicEmails = dbAdmins.map((staff) => staff.email);
+  const uniqueEmails = Array.from(new Set([...staticAdmins, ...dynamicEmails]));
+
+  return uniqueEmails;
+}
+
+export async function getActiveStaffRoleByEmail(email: string) {
+  const staff = await prisma.staff.findFirst({
+    where: {
+      email,
+      active: true, // Only active staff allowed
+    },
+    select: {
+      role: true,
+    },
+  });
+
+  return staff?.role ?? null;
+}
+
 export async function getAdminEmails(): Promise<string[]> {
   const staticAdmins = ["geraldmetohu@gmail.com", "hasanajaleksios@icloud.com"];
 
@@ -1080,7 +1152,6 @@ export async function getAdminEmails(): Promise<string[]> {
   return uniqueEmails;
 } 
 
-// getBarStaffEmails.ts
 export async function getBarStaffEmails(): Promise<string[]> {
   const dbStaff = await prisma.staff.findMany({
     where: {
@@ -1090,20 +1161,4 @@ export async function getBarStaffEmails(): Promise<string[]> {
   });
 
   return dbStaff.map((s) => s.email);
-}
-
-
-// getOnlyAdminEmails.ts
-export async function getOnlyAdminEmails(): Promise<string[]> {
-  const staticAdmins = ["geraldmetohu@gmail.com", "hasanajaleksios@icloud.com"];
-
-  const dbAdmins = await prisma.staff.findMany({
-    where: { role: "ADMIN" },
-    select: { email: true },
-  });
-
-  const dynamicEmails = dbAdmins.map((staff) => staff.email);
-  const uniqueEmails = Array.from(new Set([...staticAdmins, ...dynamicEmails]));
-
-  return uniqueEmails;
 }

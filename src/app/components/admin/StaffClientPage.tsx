@@ -53,10 +53,13 @@ const handleDelete = async (id: string) => {
   };
 
   return (
-    <div className="p-4 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4 text-blue-700">Staff Management</h1>
-      <StaffForm events={events} onStaffAdded={handleStaffAdded} />
-      <StaffList staff={staff} onDelete={handleDelete} onToggleActive={handleToggleActive} />
-    </div>
+<div className="px-4 sm:px-6 py-6 max-w-5xl mx-auto">
+  <h1 className="text-xl sm:text-2xl font-bold mb-6 text-blue-700">Staff Management</h1>
+  <StaffForm events={events} onStaffAdded={handleStaffAdded} />
+  <div className="mt-6">
+    <StaffList staff={staff} onDelete={handleDelete} onToggleActive={handleToggleActive} />
+  </div>
+</div>
+
   );
 }

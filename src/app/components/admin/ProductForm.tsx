@@ -66,11 +66,11 @@ export default function ProductForm() {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="bg-white text-gray-950 p-6 rounded shadow-md space-y-6 border border-gray-400"
-    >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+<form
+  onSubmit={handleSubmit}
+  className="bg-white text-gray-950 p-4 sm:p-6 rounded shadow-md space-y-6 border border-gray-300"
+>
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         <label className="space-y-1">
           <span className="text-sm font-medium text-gray-800">Product Name</span>
           <input
@@ -154,11 +154,11 @@ export default function ProductForm() {
         </label>
       </div>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="px-6 py-2 bg-blue-700 text-white font-semibold rounded hover:bg-blue-800 transition duration-200"
-      >
+ <button
+    type="submit"
+    disabled={loading}
+    className="w-full sm:w-auto px-6 py-2 bg-blue-700 text-white font-semibold rounded hover:bg-blue-800 transition"
+  >
         {loading ? "Adding..." : "Add Product"}
       </button>
     </form>

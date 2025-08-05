@@ -1,8 +1,7 @@
-// src/app/api/auth/creation/route.ts
 import prisma from "@/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
-import { getAdminEmails } from "@/app/actions";
+import { getAdminEmails, getActiveStaffRoleByEmail } from "@/app/actions";
 
 export async function GET() {
   const { getUser } = getKindeServerSession();
@@ -24,18 +23,14 @@ export async function GET() {
   }
 
   const adminEmails = await getAdminEmails();
-  const staff = await prisma.staff.findFirst({
-    where: { email: user.email },
-    select: { role: true },
-  });
+  const staffRole = await getActiveStaffRoleByEmail(user.email);
 
   let destination = "/";
   if (adminEmails.includes(user.email)) {
     destination = "/admin";
-  } else if (staff?.role === "BARTENDER" || staff?.role === "WAITRESS") {
+  } else if (staffRole === "BARTENDER" || staffRole === "WAITRESS") {
     destination = "/bar";
   }
 
-  // Use next/navigation redirect (relative paths allowed in app routes)
   redirect(destination);
 }

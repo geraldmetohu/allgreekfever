@@ -35,3 +35,6 @@ export async function PUT(req: NextRequest, context: any) {
     return NextResponse.json({ error: "Update failed" }, { status: 500 });
   }
 }
+
+
+//This API route handles staff management by ID. It allows deleting a staff member or updating their active status (e.g., activate/deactivate waitress or bartender access). Used in the admin panel for staff control.
