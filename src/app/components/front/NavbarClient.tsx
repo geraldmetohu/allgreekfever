@@ -30,8 +30,8 @@ export function NavBarClient({ user, ticketCount }: { user: any; ticketCount: nu
       {/* Left Side */}
       <div className="flex items-center">
         <Link href="/">
-          <h1 className="text-amber-100 font-bold text-xl lg:text-3xl">
-            AllGreek<span className="text-amber-100">Fever</span>
+          <h1 className="text-blue-100 font-bold text-xl lg:text-3xl">
+            AllGreek<span className="text-sky-500">Fever</span>
           </h1>
         </Link>
         <NavbarLinks />
@@ -58,13 +58,13 @@ export function NavBarClient({ user, ticketCount }: { user: any; ticketCount: nu
             />
           </>
         ) : (
-          <div className="hidden md:flex items-center gap-2 text-amber-50">
-            <Button className="bg-green-500 hover:bg-green-700" asChild>
+          <div className="hidden md:flex items-center gap-2 text-sky-800">
+            <Button className="bg-emerald-400 text-sky-800 hover:text-sky-50 hover:bg-emerald-700" asChild>
               <LoginLink postLoginRedirectURL="/api/auth/creation">
                 Sign In
               </LoginLink>
             </Button>
-            <Button className="bg-green-500 hover:bg-green-700" asChild>
+            <Button className="bg-emerald-400 text-sky-800 hover:text-sky-50 hover:bg-emerald-700" asChild>
               <RegisterLink>Create Account</RegisterLink>
             </Button>
           </div>

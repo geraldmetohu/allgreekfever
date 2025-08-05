@@ -84,7 +84,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-zinc-900 to-black text-amber-50`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-zinc-900 to-black`}>
         <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         {children}
       </body>

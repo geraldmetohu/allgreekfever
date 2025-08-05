@@ -33,9 +33,9 @@ export function NavbarLinks({
           onClick={onLinkClick}
           className={cn( 
             pathname === item.href
-              ? "bg-blue-700 text-amber-50 "
+              ? "bg-blue-700 text-emerald-100 "
               : "hover:bg-opacity-75 hover:bg-blue-900",
-            "group px-3 py-2 rounded-md font-medium transition-colors "
+            "group px-3 py-2 rounded-md font-medium transition-colors text-emerald-100 "
           )}
         >
           {item.name}
